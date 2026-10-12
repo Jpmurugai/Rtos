@@ -1,0 +1,2491 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>RTOS STM32 Interview Guide</title>
+  <style>
+
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style type="text/css">body { font-family: "Segoe UI", Arial, sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px 40px; line-height: 1.6; color: #24292f; background: #fff; }
+h1 { color: #1f4e79; border-bottom: 3px solid #1f4e79; padding-bottom: 8px; }
+h2 { color: #fff; background: #1f4e79; padding: 8px 12px; border-radius: 6px; margin-top: 40px; }
+h3 { color: #c0392b; margin-top: 24px; }
+code { font-family: Consolas, monospace; background: #f2f2f2; padding: 2px 5px; border-radius: 4px; font-size: 0.92em; }
+pre { background: #1e1e1e; color: #d4d4d4; padding: 14px; border-radius: 8px; overflow-x: auto; }
+pre code { background: none; padding: 0; color: inherit; }
+table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+th { background: #1f4e79; color: #fff; }
+th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+tr:nth-child(even) { background: #f6f8fa; }
+blockquote { border-left: 5px solid #f39c12; background: #fff8e6; margin: 12px 0; padding: 8px 14px; }
+#TOC { background: #f6f8fa; border: 1px solid #ddd; border-radius: 8px; padding: 10px 20px; }
+a { color: #0969da; }
+
+pre .kw, pre .cf { color: #569cd6; } pre .dt { color: #4ec9b0; } pre .st, pre .ch { color: #ce9178; }
+pre .co { color: #6a9955; } pre .dv, pre .fl { color: #b5cea8; } pre .pp { color: #c586c0; } pre .fu { color: #dcdcaa; }
+@media print { h2 { break-before: page; } pre { white-space: pre-wrap; } }
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">RTOS STM32 Interview Guide</h1>
+</header>
+<h1 id="embedded-systems--rtos-interview-guide-stm32--freertos">Embedded
+Systems &amp; RTOS Interview Guide (STM32 + FreeRTOS)</h1>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol type="1">
+<li><a href="#1-what-is-an-embedded-system">What is an Embedded
+System?</a></li>
+<li><a href="#2-what-is-a-microcontroller-stm32">What is a
+Microcontroller (STM32)?</a></li>
+<li><a href="#3-bare-metal-super-loop-programming">Bare-Metal (Super
+Loop) Programming</a></li>
+<li><a href="#4-what-is-an-rtos">What is an RTOS?</a></li>
+<li><a href="#5-why-do-we-need-an-rtos">Why Do We Need an RTOS?</a></li>
+<li><a href="#6-setting-up-freertos-on-stm32-cubemx">Setting up FreeRTOS
+on STM32 (CubeMX)</a></li>
+<li><a href="#7-tasks">Tasks</a></li>
+<li><a href="#8-task-states">Task States</a></li>
+<li><a href="#9-scheduler">Scheduler</a></li>
+<li><a href="#10-context-switching">Context Switching</a></li>
+<li><a href="#11-queue">Queue</a></li>
+<li><a href="#12-semaphore">Semaphore</a></li>
+<li><a href="#13-mutex">Mutex</a></li>
+<li><a href="#14-event-flags-event-groups">Event Flags (Event
+Groups)</a></li>
+<li><a href="#15-task-notifications">Task Notifications</a></li>
+<li><a href="#16-software-timers">Software Timers</a></li>
+<li><a href="#17-memory-management">Memory Management</a></li>
+<li><a href="#18-interrupts-with-rtos-on-stm32">Interrupts with RTOS on
+STM32</a></li>
+<li><a href="#19-complete-stm32-project-example">Complete STM32 Project
+Example</a></li>
+<li><a href="#20-common-bugs--debugging">Common Bugs &amp;
+Debugging</a></li>
+<li><a href="#21-rapid-fire-interview-questions">Rapid-Fire Interview
+Questions</a></li>
+<li><a href="#22-autosar-os-vs-rtos-basic--extended-tasks">AUTOSAR OS
+vs. RTOS (Basic &amp; Extended Tasks)</a></li>
+</ol>
+<hr />
+<h2 id="1-what-is-an-embedded-system">1. What is an Embedded
+System?</h2>
+<h3 id="q-what-is-an-embedded-system">Q: What is an embedded
+system?</h3>
+<p>An <strong>embedded system</strong> is a computer system built to do
+<strong>one specific job</strong> (or a small set of jobs) inside a
+larger device. It combines <strong>hardware</strong> (microcontroller,
+sensors, actuators) and <strong>software</strong> (firmware). Usually it
+has limited resources (CPU, RAM, power), and often it has real-time
+requirements.</p>
+<p><strong>Examples:</strong> | Domain | Example | |---|---| | Consumer
+| Washing machine, microwave, smartwatch, TV remote | | Automotive |
+ABS, airbag controller, engine ECU, infotainment | | Medical |
+Pacemaker, insulin pump, ECG monitor | | Industrial | PLC, motor drives,
+robotic arms | | IoT | Smart thermostat, smart meter, wearable fitness
+band |</p>
+<h3 id="q-what-are-the-characteristics-of-an-embedded-system">Q: What
+are the characteristics of an embedded system?</h3>
+<ul>
+<li><strong>Dedicated function:</strong> it does one job, not
+general-purpose computing.</li>
+<li><strong>Resource constrained:</strong> small RAM/Flash (KB to MB),
+low-power CPU.</li>
+<li><strong>Real-time:</strong> it often has to respond within a
+deadline.</li>
+<li><strong>Reliable:</strong> it may run for years without a
+reboot.</li>
+<li><strong>Low power:</strong> it is often battery operated.</li>
+<li><strong>Interacts with hardware:</strong> sensors, motors,
+communication buses.</li>
+</ul>
+<h3 id="q-what-are-the-components-of-an-embedded-system">Q: What are the
+components of an embedded system?</h3>
+<pre><code>+-----------------------------------------------------+
+|                 Embedded System                      |
+|                                                       |
+|  Sensors --&gt; [ Microcontroller ] --&gt; Actuators        |
+|  (input)     |  CPU            |     (output)         |
+|              |  Flash (code)   |                      |
+|              |  RAM (data)     |                      |
+|              |  Peripherals    |                      |
+|              |  (GPIO, UART,   |                      |
+|              |   SPI, I2C, ADC,|                      |
+|              |   Timers, DMA)  |                      |
+|              +-----------------+                      |
+|  Power supply, Clock (crystal), Communication         |
++-----------------------------------------------------+</code></pre>
+<h3 id="q-what-is-the-difference-between-a-microprocessor-and-a-microcontroller">Q:
+What is the difference between a microprocessor and a
+microcontroller?</h3>
+<table>
+<thead>
+<tr>
+<th>Microprocessor (MPU)</th>
+<th>Microcontroller (MCU)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU only; RAM/ROM/peripherals are external</td>
+<td>CPU + RAM + Flash + peripherals on one chip</td>
+</tr>
+<tr>
+<td>High performance, high power</td>
+<td>Lower power, low cost</td>
+</tr>
+<tr>
+<td>Runs a full OS (Linux)</td>
+<td>Runs bare-metal or an RTOS</td>
+</tr>
+<tr>
+<td>e.g., Intel Core, ARM Cortex-A</td>
+<td>e.g., STM32 (Cortex-M), AVR, PIC</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q-what-is-firmware">Q: What is firmware?</h3>
+<p>Software that is permanently stored in the device&#39;s non-volatile
+memory (Flash) and controls the hardware directly.</p>
+<h3 id="q-what-does-the-volatile-keyword-do-and-why-does-it-matter-in-embedded-systems">Q:
+What does the <code>volatile</code> keyword do, and why does it matter
+in embedded systems?</h3>
+<p><code>volatile</code> tells the compiler that a variable can change
+<strong>outside the normal program flow</strong> (from hardware
+registers, ISRs, or other tasks), so the compiler must not optimize away
+reads or writes to it.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">volatile</span> <span class="dt">uint8_t</span> flag <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>      <span class="co">// modified in an ISR</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> EXTI0_IRQHandler<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span> flag <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> <span class="op">}</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="op">(!</span>flag<span class="op">);</span>                   <span class="co">// without volatile, this could become an infinite loop</span></span></code></pre></div>
+<hr />
+<h2 id="2-what-is-a-microcontroller-stm32">2. What is a Microcontroller
+(STM32)?</h2>
+<h3 id="q-what-is-stm32">Q: What is STM32?</h3>
+<p><strong>STM32</strong> is a family of 32-bit microcontrollers from
+<strong>STMicroelectronics</strong>, built on <strong>ARM
+Cortex-M</strong> cores.</p>
+<table>
+<thead>
+<tr>
+<th>Series</th>
+<th>Core</th>
+<th>Use case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>STM32F0 / G0</td>
+<td>Cortex-M0/M0+</td>
+<td>Low cost</td>
+</tr>
+<tr>
+<td>STM32F1</td>
+<td>Cortex-M3</td>
+<td>General purpose (&quot;Blue Pill&quot;)</td>
+</tr>
+<tr>
+<td>STM32F4</td>
+<td>Cortex-M4F (FPU)</td>
+<td>DSP, high performance</td>
+</tr>
+<tr>
+<td>STM32F7 / H7</td>
+<td>Cortex-M7</td>
+<td>Very high performance</td>
+</tr>
+<tr>
+<td>STM32L series</td>
+<td>Cortex-M0+/M4</td>
+<td>Ultra low power</td>
+</tr>
+<tr>
+<td>STM32WB / WL</td>
+<td>Cortex-M4 + radio</td>
+<td>BLE / LoRa wireless</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Common board:</strong> STM32 <strong>Nucleo-F446RE</strong>
+(onboard LED = PA5, user button = PC13, UART2 over ST-Link USB).</p>
+<h3 id="q-what-tools-are-used-for-stm32-development">Q: What tools are
+used for STM32 development?</h3>
+<ul>
+<li><strong>STM32CubeIDE:</strong> IDE (Eclipse + GCC + debugger).</li>
+<li><strong>STM32CubeMX:</strong> graphical tool for pins, clocks and
+middleware (FreeRTOS); it generates code.</li>
+<li><strong>HAL / LL libraries:</strong> hardware abstraction
+drivers.</li>
+<li><strong>ST-Link:</strong> debugger and programmer.</li>
+<li><strong>CMSIS-RTOS v2:</strong> a standard RTOS API layer that wraps
+FreeRTOS.</li>
+</ul>
+<h3 id="q-what-are-the-key-cortex-m-features-that-matter-for-an-rtos">Q:
+What are the key Cortex-M features that matter for an RTOS?</h3>
+<ul>
+<li><strong>SysTick timer:</strong> generates the RTOS tick.</li>
+<li><strong>PendSV exception:</strong> used for context switching.</li>
+<li><strong>SVC instruction:</strong> starts the first task.</li>
+<li><strong>Two stack pointers:</strong> MSP (main, used by ISRs/kernel)
+and PSP (process, used by tasks).</li>
+<li><strong>NVIC:</strong> nested vectored interrupt controller with
+priorities.</li>
+</ul>
+<hr />
+<h2 id="3-bare-metal-super-loop-programming">3. Bare-Metal (Super Loop)
+Programming</h2>
+<h3 id="q-what-is-a-super-loop">Q: What is a super loop?</h3>
+<p>The simplest firmware architecture: one infinite loop in
+<code>main()</code> that calls every function in turn.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    HAL_Init<span class="op">();</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    SystemClock_Config<span class="op">();</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    MX_GPIO_Init<span class="op">();</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">)</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        ReadSensors<span class="op">();</span>       <span class="co">// 5 ms</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        UpdateDisplay<span class="op">();</span>     <span class="co">// 50 ms  &lt;-- blocks everything else</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        CheckButtons<span class="op">();</span>      <span class="co">// must react within 10 ms! (missed)</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        SendDataUART<span class="op">();</span>      <span class="co">// 20 ms</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        BlinkLED<span class="op">();</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="q-what-are-the-problems-with-a-super-loop">Q: What are the
+problems with a super loop?</h3>
+<ol type="1">
+<li><strong>Poor responsiveness:</strong> a slow function delays all the
+others.</li>
+<li><strong><code>HAL_Delay()</code> blocks everything:</strong> the CPU
+wastes time busy-waiting.</li>
+<li><strong>No priorities:</strong> urgent jobs wait for unimportant
+ones.</li>
+<li><strong>Hard to scale:</strong> adding a feature changes the timing
+of all the others.</li>
+<li><strong>Complex state machines:</strong> to avoid blocking, you end
+up writing complicated non-blocking code.</li>
+<li><strong>Tight coupling:</strong> modules are hard to develop and
+test separately.</li>
+</ol>
+<hr />
+<h2 id="4-what-is-an-rtos">4. What is an RTOS?</h2>
+<h3 id="q-what-is-an-rtos">Q: What is an RTOS?</h3>
+<p>An <strong>RTOS (Real-Time Operating System)</strong> is a small
+operating system kernel for embedded systems. It manages multiple
+<strong>tasks</strong> (threads) and guarantees
+<strong>deterministic</strong> (predictable) timing, so the most
+important work always finishes <strong>within its deadline</strong>.</p>
+<blockquote>
+<p><strong>&quot;Real-time&quot; does NOT mean &quot;fast&quot;. It means &quot;predictable and
+on time&quot;.</strong></p>
+</blockquote>
+<pre><code>            +-----------+   +-----------+   +-----------+
+            |  Task 1   |   |  Task 2   |   |  Task 3   |
+            +-----+-----+   +-----+-----+   +-----+-----+
+                  \               |               /
+             +----------------------------------------+
+             |                 RTOS KERNEL             |
+             | Scheduler | Context Switch | Queue      |
+             | Semaphore | Mutex | Event Flags | Timers|
+             +--------------------+-------------------+
+                                  |
+                       +----------v----------+
+                       |   MCU (STM32)       |
+                       +---------------------+</code></pre>
+<h3 id="q-what-are-the-main-components-of-an-rtos">Q: What are the main
+components of an RTOS?</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Task</strong></td>
+<td>Independent unit of work with its own stack and priority</td>
+</tr>
+<tr>
+<td><strong>Scheduler</strong></td>
+<td>Decides which task runs next</td>
+</tr>
+<tr>
+<td><strong>Context switching</strong></td>
+<td>Saves and restores CPU registers when switching tasks</td>
+</tr>
+<tr>
+<td><strong>Queue</strong></td>
+<td>Passes data between tasks or from ISR to task</td>
+</tr>
+<tr>
+<td><strong>Semaphore</strong></td>
+<td>Signals and synchronizes</td>
+</tr>
+<tr>
+<td><strong>Mutex</strong></td>
+<td>Gives exclusive access to a shared resource</td>
+</tr>
+<tr>
+<td><strong>Event flags</strong></td>
+<td>Waits on multiple conditions</td>
+</tr>
+<tr>
+<td><strong>Software timers</strong></td>
+<td>Calls a function after a delay or periodically</td>
+</tr>
+<tr>
+<td><strong>Memory management</strong></td>
+<td>Allocates task stacks and kernel objects</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q-what-are-hard-firm-and-soft-real-time-systems">Q: What are
+hard, firm and soft real-time systems?</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>If a deadline is missed</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hard</strong></td>
+<td>System failure, possibly dangerous</td>
+<td>Airbag, pacemaker, ABS</td>
+</tr>
+<tr>
+<td><strong>Firm</strong></td>
+<td>The result is useless but the system survives</td>
+<td>Video frame decoding</td>
+</tr>
+<tr>
+<td><strong>Soft</strong></td>
+<td>Quality drops</td>
+<td>Audio streaming, UI</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q-what-is-the-difference-between-an-rtos-and-a-gpos">Q: What is
+the difference between an RTOS and a GPOS?</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>RTOS</th>
+<th>GPOS (Linux/Windows)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Goal</td>
+<td>Determinism</td>
+<td>Throughput / fairness</td>
+</tr>
+<tr>
+<td>Latency</td>
+<td>Microseconds, bounded</td>
+<td>Milliseconds, unbounded</td>
+</tr>
+<tr>
+<td>Size</td>
+<td>5–20 KB</td>
+<td>MBs–GBs</td>
+</tr>
+<tr>
+<td>Scheduling</td>
+<td>Priority preemptive</td>
+<td>Time sharing / fair scheduling</td>
+</tr>
+<tr>
+<td>MMU required</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Boot time</td>
+<td>Milliseconds</td>
+<td>Seconds</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q-what-are-some-popular-rtoses">Q: What are some popular
+RTOSes?</h3>
+<p>FreeRTOS (most common; Amazon), Zephyr (Linux Foundation), Azure RTOS
+ThreadX (now Eclipse ThreadX), Keil RTX, Micrium uC/OS, VxWorks, QNX,
+embOS.</p>
+<h3 id="q-what-is-determinism">Q: What is determinism?</h3>
+<p>The same input always produces the same output <strong>within the
+same bounded time</strong>. Worst-case execution time (WCET) is
+known.</p>
+<h3 id="q-what-is-latency-what-is-jitter">Q: What is latency? What is
+jitter?</h3>
+<ul>
+<li><strong>Interrupt latency:</strong> time from the interrupt signal
+to the first ISR instruction.</li>
+<li><strong>Scheduling latency:</strong> time from an event to the start
+of the task that handles it.</li>
+<li><strong>Jitter:</strong> variation in timing, e.g., a 10 ms periodic
+task actually runs at 9.8–10.3 ms.</li>
+</ul>
+<hr />
+<h2 id="5-why-do-we-need-an-rtos">5. Why Do We Need an RTOS?</h2>
+<h3 id="q-why-use-an-rtos-instead-of-a-super-loop">Q: Why use an RTOS
+instead of a super loop?</h3>
+<ol type="1">
+<li><strong>Multitasking:</strong> several jobs appear to run in
+parallel.</li>
+<li><strong>Priority-based response:</strong> urgent work (motor
+control) preempts less important work (logging).</li>
+<li><strong>Deterministic timing:</strong> deadlines are
+guaranteed.</li>
+<li><strong>Efficient CPU use:</strong> blocked tasks use 0% CPU, unlike
+busy-waiting with <code>HAL_Delay</code>.</li>
+<li><strong>Modularity:</strong> each feature is its own task, which is
+easier to develop, test and maintain.</li>
+<li><strong>Team development:</strong> different engineers own different
+tasks.</li>
+<li><strong>Built-in IPC:</strong> queues, semaphores and mutexes are
+tested and thread-safe.</li>
+<li><strong>Low power:</strong> the idle task can put the MCU to sleep
+(tickless idle).</li>
+<li><strong>Scalability:</strong> you can add features without rewriting
+the timing.</li>
+<li><strong>Ecosystem:</strong> TCP/IP, USB, file systems and BLE stacks
+often require an RTOS.</li>
+</ol>
+<h3 id="q-when-should-you-not-use-an-rtos">Q: When should you NOT use an
+RTOS?</h3>
+<ul>
+<li>Very simple applications (e.g., blinking an LED or reading one
+sensor).</li>
+<li>Extremely small MCUs (&lt; 4 KB RAM).</li>
+<li>When the extra code size and complexity are not justified.</li>
+<li>When interrupts plus a simple loop already meet every deadline.</li>
+</ul>
+<h3 id="q-show-the-same-job-written-as-a-super-loop-and-as-an-rtos">Q:
+Show the same job written as a super loop and as an RTOS.</h3>
+<p><strong>Super loop (blocking):</strong></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    HAL_GPIO_TogglePin<span class="op">(</span>GPIOA<span class="op">,</span> GPIO_PIN_5<span class="op">);</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    HAL_Delay<span class="op">(</span><span class="dv">500</span><span class="op">);</span>                 <span class="co">// CPU is stuck here</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>HAL_GPIO_ReadPin<span class="op">(</span>GPIOC<span class="op">,</span> GPIO_PIN_13<span class="op">)</span> <span class="op">==</span> GPIO_PIN_RESET<span class="op">)</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">&quot;Button</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">);</span>       <span class="co">// response up to 500 ms late!</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>RTOS (each task independent):</strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> LedTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span> <span class="op">{</span> HAL_GPIO_TogglePin<span class="op">(</span>GPIOA<span class="op">,</span> GPIO_PIN_5<span class="op">);</span> vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">500</span><span class="op">));</span> <span class="op">}</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> ButtonTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">)</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>HAL_GPIO_ReadPin<span class="op">(</span>GPIOC<span class="op">,</span> GPIO_PIN_13<span class="op">)</span> <span class="op">==</span> GPIO_PIN_RESET<span class="op">)</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>            printf<span class="op">(</span><span class="st">&quot;Button</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">);</span>    <span class="co">// responds within 10 ms</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">10</span><span class="op">));</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<hr />
+<h2 id="6-setting-up-freertos-on-stm32-cubemx">6. Setting up FreeRTOS on
+STM32 (CubeMX)</h2>
+<h3 id="steps-in-stm32cubeide">Steps in STM32CubeIDE</h3>
+<ol type="1">
+<li><strong>File &gt; New &gt; STM32 Project</strong>, then select the
+board (e.g., NUCLEO-F446RE).</li>
+<li><strong>System Core &gt; SYS &gt; Timebase Source: TIM6</strong>
+(not SysTick).
+<ul>
+<li><em>Why?</em> FreeRTOS uses <strong>SysTick</strong> for its tick,
+so HAL needs a different timer for <code>HAL_GetTick()</code>.</li>
+</ul></li>
+<li><strong>Middleware &gt; FREERTOS &gt; Interface:
+CMSIS_V2</strong>.</li>
+<li>In the <strong>Tasks and Queues</strong> tab, add tasks, queues,
+semaphores and mutexes.</li>
+<li>In <strong>Config parameters</strong>, set
+<code>TOTAL_HEAP_SIZE</code>, <code>USE_PREEMPTION</code>,
+<code>TICK_RATE_HZ</code>, and so on.</li>
+<li>Generate the code. Write your logic inside the generated task
+functions in <code>main.c</code> or <code>freertos.c</code>.</li>
+</ol>
+<h3 id="important-freertosconfigh-settings">Important
+<code>FreeRTOSConfig.h</code> settings</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define configUSE_PREEMPTION                    </span><span class="dv">1</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define configCPU_CLOCK_HZ                      </span><span class="op">(</span><span class="pp">SystemCoreClock</span><span class="op">)</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#define configTICK_RATE_HZ                      </span><span class="op">((</span><span class="pp">TickType_t</span><span class="op">)</span><span class="dv">1000</span><span class="op">)</span><span class="pp">   </span><span class="co">// 1 ms tick</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#define configMAX_PRIORITIES                    </span><span class="op">(</span><span class="dv">56</span><span class="op">)</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#define configMINIMAL_STACK_SIZE                </span><span class="op">((</span><span class="dt">uint16_t</span><span class="op">)</span><span class="dv">128</span><span class="op">)</span><span class="pp">      </span><span class="co">// words, not bytes!</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#define configTOTAL_HEAP_SIZE                   </span><span class="op">((</span><span class="dt">size_t</span><span class="op">)</span><span class="dv">15360</span><span class="op">)</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="pp">#define configUSE_MUTEXES                       </span><span class="dv">1</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="pp">#define configUSE_RECURSIVE_MUTEXES             </span><span class="dv">1</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="pp">#define configUSE_COUNTING_SEMAPHORES           </span><span class="dv">1</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="pp">#define configUSE_TIMERS                        </span><span class="dv">1</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="pp">#define configCHECK_FOR_STACK_OVERFLOW          </span><span class="dv">2</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="pp">#define configUSE_MALLOC_FAILED_HOOK            </span><span class="dv">1</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="pp">#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY </span><span class="dv">5</span></span></code></pre></div>
+<h3 id="q-native-freertos-api-vs-cmsis-rtos-v2-api">Q: Native FreeRTOS
+API vs. CMSIS-RTOS v2 API?</h3>
+<table>
+<thead>
+<tr>
+<th>Native FreeRTOS</th>
+<th>CMSIS-RTOS v2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>xTaskCreate()</code></td>
+<td><code>osThreadNew()</code></td>
+</tr>
+<tr>
+<td><code>vTaskDelay()</code></td>
+<td><code>osDelay()</code></td>
+</tr>
+<tr>
+<td><code>xQueueSend()</code></td>
+<td><code>osMessageQueuePut()</code></td>
+</tr>
+<tr>
+<td><code>xSemaphoreTake()</code></td>
+<td><code>osSemaphoreAcquire()</code> /
+<code>osMutexAcquire()</code></td>
+</tr>
+<tr>
+<td><code>xEventGroupSetBits()</code></td>
+<td><code>osEventFlagsSet()</code></td>
+</tr>
+</tbody>
+</table>
+<p>CMSIS is portable across RTOSes. Native FreeRTOS is more widely
+documented and is what interviewers usually ask about. <strong>This
+guide uses the native API.</strong></p>
+<h3 id="redirect-printf-to-uart2-used-in-the-examples">Redirect
+<code>printf</code> to UART2 (used in the examples)</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">extern</span> UART_HandleTypeDef huart2<span class="op">;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> __io_putchar<span class="op">(</span><span class="dt">int</span> ch<span class="op">)</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    HAL_UART_Transmit<span class="op">(&amp;</span>huart2<span class="op">,</span> <span class="op">(</span><span class="dt">uint8_t</span> <span class="op">*)&amp;</span>ch<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> HAL_MAX_DELAY<span class="op">);</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ch<span class="op">;</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<hr />
+<h2 id="7-tasks">7. Tasks</h2>
+<h3 id="q-what-is-a-task">Q: What is a task?</h3>
+<p>An independent function that runs forever and has:</p>
+<ul>
+<li>its <strong>own stack</strong> (local variables, saved
+context),</li>
+<li>a <strong>priority</strong>,</li>
+<li>a <strong>TCB (Task Control Block)</strong>: a kernel structure that
+stores the stack pointer, priority, state, name and other details.</li>
+</ul>
+<h3 id="q-show-how-to-create-tasks-on-stm32">Q: Show how to create tasks
+on STM32.</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;FreeRTOS.h&quot;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;task.h&quot;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>TaskHandle_t hLedTask<span class="op">,</span> hUartTask<span class="op">;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> LedTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>argument<span class="op">)</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>        HAL_GPIO_TogglePin<span class="op">(</span>GPIOA<span class="op">,</span> GPIO_PIN_5<span class="op">);</span>      <span class="co">// Nucleo LD2</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">500</span><span class="op">));</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> UartTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>argument<span class="op">)</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint32_t</span> count <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">&quot;Hello from task, count=</span><span class="sc">%lu\r\n</span><span class="st">&quot;</span><span class="op">,</span> count<span class="op">++);</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>        vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">1000</span><span class="op">));</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    HAL_Init<span class="op">();</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    SystemClock_Config<span class="op">();</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    MX_GPIO_Init<span class="op">();</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>    MX_USART2_UART_Init<span class="op">();</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    xTaskCreate<span class="op">(</span>LedTask<span class="op">,</span>  <span class="st">&quot;LED&quot;</span><span class="op">,</span>  <span class="dv">128</span><span class="op">,</span> NULL<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="op">&amp;</span>hLedTask<span class="op">);</span></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>    xTaskCreate<span class="op">(</span>UartTask<span class="op">,</span> <span class="st">&quot;UART&quot;</span><span class="op">,</span> <span class="dv">256</span><span class="op">,</span> NULL<span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="op">&amp;</span>hUartTask<span class="op">);</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>    vTaskStartScheduler<span class="op">();</span>      <span class="co">// never returns if successful</span></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">);</span>                  <span class="co">// reached only if there is not enough heap</span></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="q-what-are-the-parameters-of-xtaskcreate">Q: What are the
+parameters of <code>xTaskCreate</code>?</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>BaseType_t xTaskCreate<span class="op">(</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    TaskFunction_t pvTaskCode<span class="op">,</span>     <span class="co">// task function</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>pcName<span class="op">,</span>            <span class="co">// name (for debugging)</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint16_t</span> usStackDepth<span class="op">,</span>         <span class="co">// stack size in WORDS (128 words = 512 bytes on a 32-bit MCU)</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">void</span> <span class="op">*</span>pvParameters<span class="op">,</span>            <span class="co">// argument passed to the task</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    UBaseType_t uxPriority<span class="op">,</span>        <span class="co">// priority (0 = lowest = idle)</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    TaskHandle_t <span class="op">*</span>pxCreatedTask<span class="op">);</span>  <span class="co">// handle (optional)</span></span></code></pre></div>
+<h3 id="q-how-do-you-pass-parameters-to-a-task-one-function-several-tasks">Q:
+How do you pass parameters to a task (one function, several tasks)?</h3>
+<div class="sourceCode" id="cb11"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span> GPIO_TypeDef <span class="op">*</span>port<span class="op">;</span> <span class="dt">uint16_t</span> pin<span class="op">;</span> <span class="dt">uint32_t</span> period<span class="op">;</span> <span class="op">}</span> LedCfg_t<span class="op">;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> LedCfg_t led1 <span class="op">=</span> <span class="op">{</span> GPIOA<span class="op">,</span> GPIO_PIN_5<span class="op">,</span> <span class="dv">200</span> <span class="op">};</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> LedCfg_t led2 <span class="op">=</span> <span class="op">{</span> GPIOB<span class="op">,</span> GPIO_PIN_0<span class="op">,</span> <span class="dv">700</span> <span class="op">};</span>   <span class="co">// must be static/global, not on main&#39;s stack!</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> BlinkTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">)</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    LedCfg_t <span class="op">*</span>cfg <span class="op">=</span> <span class="op">(</span>LedCfg_t <span class="op">*)</span>arg<span class="op">;</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        HAL_GPIO_TogglePin<span class="op">(</span>cfg<span class="op">-&gt;</span>port<span class="op">,</span> cfg<span class="op">-&gt;</span>pin<span class="op">);</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>        vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span>cfg<span class="op">-&gt;</span>period<span class="op">));</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>xTaskCreate<span class="op">(</span>BlinkTask<span class="op">,</span> <span class="st">&quot;Blink1&quot;</span><span class="op">,</span> <span class="dv">128</span><span class="op">,</span> <span class="op">&amp;</span>led1<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>xTaskCreate<span class="op">(</span>BlinkTask<span class="op">,</span> <span class="st">&quot;Blink2&quot;</span><span class="op">,</span> <span class="dv">128</span><span class="op">,</span> <span class="op">&amp;</span>led2<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> NULL<span class="op">);</span></span></code></pre></div>
+<h3 id="q-why-should-a-task-never-return">Q: Why should a task never
+return?</h3>
+<p>In FreeRTOS, returning from a task function is <strong>undefined
+behaviour</strong> (on Cortex-M it calls <code>prvTaskExitError</code>,
+which traps the system). A task must loop forever or call
+<code>vTaskDelete(NULL)</code>.</p>
+<h3 id="q-how-do-you-choose-the-stack-size-how-do-you-detect-a-stack-overflow">Q:
+How do you choose the stack size? How do you detect a stack
+overflow?</h3>
+<ul>
+<li>Start with an estimate (local variables + function call depth +
+printf, which is heavy).</li>
+<li>Measure: <code>uxTaskGetStackHighWaterMark(NULL)</code> returns the
+minimum free stack seen so far, in words.</li>
+<li>Enable <code>configCHECK_FOR_STACK_OVERFLOW 2</code> and implement
+the hook:</li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> vApplicationStackOverflowHook<span class="op">(</span>TaskHandle_t xTask<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span>pcTaskName<span class="op">)</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">&quot;STACK OVERFLOW in </span><span class="sc">%s\r\n</span><span class="st">&quot;</span><span class="op">,</span> pcTaskName<span class="op">);</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    __disable_irq<span class="op">();</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="q-static-vs-dynamic-task-creation">Q: Static vs. dynamic task
+creation?</h3>
+<ul>
+<li><code>xTaskCreate()</code> allocates the TCB and stack from the
+FreeRTOS heap (dynamic).</li>
+<li><code>xTaskCreateStatic()</code> uses buffers you provide (static).
+No heap is needed, which is preferred in safety-critical systems (MISRA,
+ISO 26262).</li>
+</ul>
+<hr />
+<h2 id="8-task-states">8. Task States</h2>
+<pre><code>                     xTaskCreate()
+                          |
+                          v
+         +----------&gt;  READY  &lt;-------------------+
+         |               |                         |
+         | preempted /   | scheduler picks         | event occurs /
+         | taskYIELD()   | highest priority        | timeout expires
+         |               v                         |
+         +---------- RUNNING --------------------&gt; BLOCKED
+                         |   vTaskDelay, xQueueReceive,
+                         |   xSemaphoreTake (waiting)
+                         |
+          vTaskSuspend() |            vTaskResume()
+                         v          (from any state)
+                     SUSPENDED  --------&gt; READY</code></pre>
+<h3 id="q-explain-each-task-state">Q: Explain each task state.</h3>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Running</strong></td>
+<td>Currently executing on the CPU (only one on a single core)</td>
+</tr>
+<tr>
+<td><strong>Ready</strong></td>
+<td>Able to run; waiting for a higher or equal priority task to give up
+the CPU</td>
+</tr>
+<tr>
+<td><strong>Blocked</strong></td>
+<td>Waiting for an event (queue, semaphore, delay) <strong>with an
+optional timeout</strong>; uses no CPU</td>
+</tr>
+<tr>
+<td><strong>Suspended</strong></td>
+<td>Stopped explicitly; no timeout; only <code>vTaskResume()</code>
+brings it back</td>
+</tr>
+<tr>
+<td><strong>Deleted</strong></td>
+<td>Removed; the idle task frees its memory</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q-blocked-vs-suspended">Q: Blocked vs. Suspended?</h3>
+<ul>
+<li><strong>Blocked:</strong> wakes automatically when its event happens
+or its timeout expires.</li>
+<li><strong>Suspended:</strong> never wakes automatically; another piece
+of code must call <code>vTaskResume()</code>.</li>
+</ul>
+<h3 id="example-suspend-and-resume-a-task-with-the-button">Example:
+suspend and resume a task with the button</h3>
+<div class="sourceCode" id="cb14"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> ButtonTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">)</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> suspended <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>HAL_GPIO_ReadPin<span class="op">(</span>GPIOC<span class="op">,</span> GPIO_PIN_13<span class="op">)</span> <span class="op">==</span> GPIO_PIN_RESET<span class="op">)</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">{</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="op">(</span>suspended<span class="op">)</span> vTaskResume<span class="op">(</span>hLedTask<span class="op">);</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>           vTaskSuspend<span class="op">(</span>hLedTask<span class="op">);</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>            suspended <span class="op">=</span> <span class="op">!</span>suspended<span class="op">;</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>            vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">300</span><span class="op">));</span>   <span class="co">// debounce</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>        vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">20</span><span class="op">));</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="q-how-do-you-read-a-tasks-state-at-run-time">Q: How do you read
+a task&#39;s state at run time?</h3>
+<div class="sourceCode" id="cb15"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>eTaskState s <span class="op">=</span> eTaskGetState<span class="op">(</span>hLedTask<span class="op">);</span> <span class="co">// eRunning, eReady, eBlocked, eSuspended, eDeleted</span></span></code></pre></div>
+<hr />
+<h2 id="9-scheduler">9. Scheduler</h2>
+<h3 id="q-what-is-the-scheduler">Q: What is the scheduler?</h3>
+<p>The part of the kernel that decides <strong>which ready task runs
+next</strong>. FreeRTOS uses <strong>fixed-priority preemptive
+scheduling with round-robin time slicing</strong> for tasks of equal
+priority.</p>
+<h3 id="q-explain-the-scheduling-algorithms">Q: Explain the scheduling
+algorithms.</h3>
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Preemptive priority</strong></td>
+<td>The highest-priority ready task always runs; it interrupts
+lower-priority ones immediately</td>
+</tr>
+<tr>
+<td><strong>Cooperative</strong></td>
+<td>A task runs until it yields or blocks voluntarily</td>
+</tr>
+<tr>
+<td><strong>Round-robin / time slicing</strong></td>
+<td>Equal-priority tasks share the CPU, one tick each</td>
+</tr>
+<tr>
+<td><strong>Rate Monotonic (RMS)</strong></td>
+<td>Static priorities: shorter period = higher priority (design
+method)</td>
+</tr>
+<tr>
+<td><strong>EDF (Earliest Deadline First)</strong></td>
+<td>Dynamic: the task with the closest deadline runs first</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q-how-does-preemption-work-timeline">Q: How does preemption
+work? (timeline)</h3>
+<pre><code>Priority
+  3 |          [ High ]                    [ High ]
+  2 |     [Med]        [Med]
+  1 | [Low]                  [ Low ...  ]
+    +-----------------------------------------------&gt; time
+         ^ High becomes ready -&gt; preempts immediately</code></pre>
+<h3 id="q-what-is-the-tick">Q: What is the tick?</h3>
+<p>A periodic interrupt (<strong>SysTick</strong> on STM32) at
+<code>configTICK_RATE_HZ</code> (usually 1 kHz = 1 ms). On each tick,
+the kernel:</p>
+<ul>
+<li>increments the tick count,</li>
+<li>unblocks tasks whose delay has expired,</li>
+<li>performs time slicing among equal-priority tasks.</li>
+</ul>
+<h3 id="q-what-is-the-idle-task">Q: What is the idle task?</h3>
+<p>It is created automatically by <code>vTaskStartScheduler()</code> at
+priority 0 and runs when no other task is ready. It:</p>
+<ul>
+<li>frees the memory of deleted tasks,</li>
+<li>runs <code>vApplicationIdleHook()</code>, which can be used for
+low-power <code>__WFI()</code> sleep.</li>
+</ul>
+<h3 id="q-what-is-starvation-how-do-you-prevent-it">Q: What is
+starvation? How do you prevent it?</h3>
+<p>A low-priority task never runs because higher-priority tasks never
+block. <strong>Fix:</strong> high-priority tasks must block (delay, wait
+on a queue or semaphore); never busy-wait.</p>
+<h3 id="q-vtaskdelay-vs-vtaskdelayuntil">Q: <code>vTaskDelay</code> vs.
+<code>vTaskDelayUntil</code>?</h3>
+<div class="sourceCode" id="cb17"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Relative delay: the period = execution time + 10 ms, so it DRIFTS</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> TaskA<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>a<span class="op">)</span> <span class="op">{</span> <span class="cf">for</span> <span class="op">(;;)</span> <span class="op">{</span> DoWork<span class="op">();</span> vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">10</span><span class="op">));</span> <span class="op">}</span> <span class="op">}</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Absolute delay: exactly every 10 ms, NO DRIFT (use for control loops)</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> TaskB<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>a<span class="op">)</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    TickType_t last <span class="op">=</span> xTaskGetTickCount<span class="op">();</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span> <span class="op">{</span> DoWork<span class="op">();</span> vTaskDelayUntil<span class="op">(&amp;</span>last<span class="op">,</span> pdMS_TO_TICKS<span class="op">(</span><span class="dv">10</span><span class="op">));</span> <span class="op">}</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="q-can-you-control-the-scheduler-manually">Q: Can you control the
+scheduler manually?</h3>
+<div class="sourceCode" id="cb18"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>vTaskSuspendAll<span class="op">();</span>   <span class="co">// pauses the scheduler (interrupts stay enabled)</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co">/* ... non-preemptible code ... */</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>xTaskResumeAll<span class="op">();</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>taskYIELD<span class="op">();</span>         <span class="co">// voluntarily give up the CPU to an equal-priority task</span></span></code></pre></div>
+<h3 id="q-how-do-you-measure-cpu-usage-per-task">Q: How do you measure
+CPU usage per task?</h3>
+<p>Enable <code>configGENERATE_RUN_TIME_STATS</code> (using a timer such
+as TIM2 as the counter) and call
+<code>vTaskGetRunTimeStats(buf)</code>.</p>
+<hr />
+<h2 id="10-context-switching">10. Context Switching</h2>
+<h3 id="q-what-is-context-switching">Q: What is context switching?</h3>
+<p>Saving the <strong>CPU state (registers)</strong> of the currently
+running task and restoring the state of the next task, so that each task
+continues exactly where it stopped.</p>
+<h3 id="q-what-is-the-context-on-a-cortex-m4">Q: What is the &quot;context&quot;
+on a Cortex-M4?</h3>
+<ul>
+<li>Core registers <strong>R0–R12, SP, LR, PC, xPSR</strong></li>
+<li>FPU registers <strong>S0–S31, FPSCR</strong> (if the FPU is used;
+lazy stacking)</li>
+</ul>
+<h3 id="q-how-does-context-switching-work-on-stm32-cortex-m">Q: How does
+context switching work on STM32 (Cortex-M)?</h3>
+<pre><code>Task A running (uses PSP)
+      |
+  SysTick ISR / taskYIELD() / xQueueSend unblocks a higher-priority task
+      |
+  Set PendSV pending  (SCB-&gt;ICSR |= PENDSVSET)
+      |
+  PendSV_Handler (lowest priority, runs after all other ISRs)
+      |-- Hardware auto-pushes: R0-R3, R12, LR, PC, xPSR  -&gt; Task A stack
+      |-- Software pushes:       R4-R11 (+S16-S31 if FPU)  -&gt; Task A stack
+      |-- Save PSP into TCB_A-&gt;pxTopOfStack
+      |-- vTaskSwitchContext() -&gt; pxCurrentTCB = TCB_B
+      |-- Load PSP from TCB_B-&gt;pxTopOfStack
+      |-- Software pops R4-R11
+      |-- Exception return -&gt; hardware pops R0-R3, R12, LR, PC, xPSR
+      v
+Task B running</code></pre>
+<h3 id="q-why-is-pendsv-set-to-the-lowest-priority">Q: Why is PendSV set
+to the lowest priority?</h3>
+<p>So that the context switch <strong>never preempts another
+ISR</strong>. It runs only after every pending interrupt has completed,
+which keeps ISR latency low and the kernel consistent.</p>
+<h3 id="q-why-use-pendsv-instead-of-doing-the-switch-inside-systick">Q:
+Why use PendSV instead of doing the switch inside SysTick?</h3>
+<p>SysTick could fire while another ISR is running. Switching tasks at
+that moment would corrupt the ISR. PendSV defers the switch until it is
+safe.</p>
+<h3 id="q-what-are-svc-msp-and-psp">Q: What are SVC, MSP and PSP?</h3>
+<ul>
+<li><strong>SVC:</strong> used once by
+<code>vPortStartFirstTask()</code> to launch the first task.</li>
+<li><strong>MSP (Main Stack Pointer):</strong> used by ISRs and the
+kernel.</li>
+<li><strong>PSP (Process Stack Pointer):</strong> used by tasks; each
+task has its own stack area.</li>
+</ul>
+<h3 id="q-what-is-the-cost-of-a-context-switch">Q: What is the cost of a
+context switch?</h3>
+<p>Roughly 100–200 CPU cycles on a Cortex-M4 (about 1 µs at 168 MHz).
+Too many switches waste CPU time, so avoid an unnecessarily high tick
+rate or tiny delays.</p>
+<hr />
+<h2 id="11-queue">11. Queue</h2>
+<h3 id="q-what-is-a-queue">Q: What is a queue?</h3>
+<p>A <strong>thread-safe FIFO buffer</strong> for passing
+<strong>data</strong> between tasks or from an ISR to a task.</p>
+<ul>
+<li>Data is <strong>copied</strong> into the queue (copy by value).</li>
+<li>The sender blocks if the queue is full; the receiver blocks if it is
+empty (both with a timeout).</li>
+<li>Several tasks can send to or receive from the same queue.</li>
+</ul>
+<pre><code> Producer Task --&gt; [ item | item | item |      ] --&gt; Consumer Task
+                      Queue (length = N, item size = S)</code></pre>
+<h3 id="example-1-adc-sensor-task-to-display-task">Example 1: ADC sensor
+task to display task</h3>
+<div class="sourceCode" id="cb21"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;queue.h&quot;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>QueueHandle_t xTempQueue<span class="op">;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint32_t</span> timestamp<span class="op">;</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">float</span>    temperature<span class="op">;</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> SensorData_t<span class="op">;</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> SensorTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">)</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    SensorData_t data<span class="op">;</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>        HAL_ADC_Start<span class="op">(&amp;</span>hadc1<span class="op">);</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>        HAL_ADC_PollForConversion<span class="op">(&amp;</span>hadc1<span class="op">,</span> <span class="dv">10</span><span class="op">);</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>        <span class="dt">uint32_t</span> raw <span class="op">=</span> HAL_ADC_GetValue<span class="op">(&amp;</span>hadc1<span class="op">);</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>        data<span class="op">.</span>timestamp   <span class="op">=</span> xTaskGetTickCount<span class="op">();</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>        data<span class="op">.</span>temperature <span class="op">=</span> <span class="op">(</span>raw <span class="op">*</span> <span class="fl">3.3</span><span class="bu">f</span> <span class="op">/</span> <span class="fl">4095.0</span><span class="bu">f</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100.0</span><span class="bu">f</span><span class="op">;</span>  <span class="co">// LM35: 10 mV/C</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>xQueueSend<span class="op">(</span>xTempQueue<span class="op">,</span> <span class="op">&amp;</span>data<span class="op">,</span> pdMS_TO_TICKS<span class="op">(</span><span class="dv">10</span><span class="op">))</span> <span class="op">!=</span> pdPASS<span class="op">)</span></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>            printf<span class="op">(</span><span class="st">&quot;Queue full!</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>        vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">200</span><span class="op">));</span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> DisplayTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">)</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>    SensorData_t rx<span class="op">;</span></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span></span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>xQueueReceive<span class="op">(</span>xTempQueue<span class="op">,</span> <span class="op">&amp;</span>rx<span class="op">,</span> portMAX_DELAY<span class="op">)</span> <span class="op">==</span> pdPASS<span class="op">)</span></span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>            printf<span class="op">(</span><span class="st">&quot;[</span><span class="sc">%lu</span><span class="st"> ms] Temp = </span><span class="sc">%.2f</span><span class="st"> C</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">,</span> rx<span class="op">.</span>timestamp<span class="op">,</span> rx<span class="op">.</span>temperature<span class="op">);</span></span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a><span class="co">// in main():</span></span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>xTempQueue <span class="op">=</span> xQueueCreate<span class="op">(</span><span class="dv">10</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>SensorData_t<span class="op">));</span></span></code></pre></div>
+<h3 id="example-2-uart-receive-interrupt-to-command-task">Example 2:
+UART receive interrupt to command task</h3>
+<div class="sourceCode" id="cb22"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>QueueHandle_t xUartRxQueue<span class="op">;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> rxByte<span class="op">;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> HAL_UART_RxCpltCallback<span class="op">(</span>UART_HandleTypeDef <span class="op">*</span>huart<span class="op">)</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>huart<span class="op">-&gt;</span>Instance <span class="op">==</span> USART2<span class="op">)</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>        BaseType_t xWoken <span class="op">=</span> pdFALSE<span class="op">;</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>        xQueueSendFromISR<span class="op">(</span>xUartRxQueue<span class="op">,</span> <span class="op">&amp;</span>rxByte<span class="op">,</span> <span class="op">&amp;</span>xWoken<span class="op">);</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>        HAL_UART_Receive_IT<span class="op">(&amp;</span>huart2<span class="op">,</span> <span class="op">&amp;</span>rxByte<span class="op">,</span> <span class="dv">1</span><span class="op">);</span>       <span class="co">// re-arm the receive</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>        portYIELD_FROM_ISR<span class="op">(</span>xWoken<span class="op">);</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> CommandTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">)</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> cmd<span class="op">[</span><span class="dv">32</span><span class="op">];</span> <span class="dt">uint8_t</span> idx <span class="op">=</span> <span class="dv">0</span><span class="op">,</span> ch<span class="op">;</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    HAL_UART_Receive_IT<span class="op">(&amp;</span>huart2<span class="op">,</span> <span class="op">&amp;</span>rxByte<span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>        xQueueReceive<span class="op">(</span>xUartRxQueue<span class="op">,</span> <span class="op">&amp;</span>ch<span class="op">,</span> portMAX_DELAY<span class="op">);</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>ch <span class="op">==</span> <span class="ch">&#39;</span><span class="sc">\r</span><span class="ch">&#39;</span> <span class="op">||</span> ch <span class="op">==</span> <span class="ch">&#39;</span><span class="sc">\n</span><span class="ch">&#39;</span><span class="op">)</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>        <span class="op">{</span></span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>            cmd<span class="op">[</span>idx<span class="op">]</span> <span class="op">=</span> <span class="ch">&#39;</span><span class="sc">\0</span><span class="ch">&#39;</span><span class="op">;</span> idx <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span>      <span class="op">(</span>strcmp<span class="op">(</span>cmd<span class="op">,</span> <span class="st">&quot;on&quot;</span><span class="op">)</span>  <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> HAL_GPIO_WritePin<span class="op">(</span>GPIOA<span class="op">,</span> GPIO_PIN_5<span class="op">,</span> GPIO_PIN_SET<span class="op">);</span></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>strcmp<span class="op">(</span>cmd<span class="op">,</span> <span class="st">&quot;off&quot;</span><span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> HAL_GPIO_WritePin<span class="op">(</span>GPIOA<span class="op">,</span> GPIO_PIN_5<span class="op">,</span> GPIO_PIN_RESET<span class="op">);</span></span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span> printf<span class="op">(</span><span class="st">&quot;Unknown: </span><span class="sc">%s\r\n</span><span class="st">&quot;</span><span class="op">,</span> cmd<span class="op">);</span></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>idx <span class="op">&lt;</span> <span class="kw">sizeof</span><span class="op">(</span>cmd<span class="op">)</span> <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> cmd<span class="op">[</span>idx<span class="op">++]</span> <span class="op">=</span> ch<span class="op">;</span></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a><span class="co">// main: xUartRxQueue = xQueueCreate(64, sizeof(uint8_t));</span></span></code></pre></div>
+<h3 id="q-queue-api-summary">Q: Queue API summary</h3>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>xQueueCreate(len, size)</code></td>
+<td>Create a queue</td>
+</tr>
+<tr>
+<td><code>xQueueSend / xQueueSendToBack</code></td>
+<td>Add to the back</td>
+</tr>
+<tr>
+<td><code>xQueueSendToFront</code></td>
+<td>Add to the front (urgent item)</td>
+</tr>
+<tr>
+<td><code>xQueueReceive</code></td>
+<td>Remove and read</td>
+</tr>
+<tr>
+<td><code>xQueuePeek</code></td>
+<td>Read without removing</td>
+</tr>
+<tr>
+<td><code>xQueueOverwrite</code></td>
+<td>For a queue of length 1 (latest value / &quot;mailbox&quot;)</td>
+</tr>
+<tr>
+<td><code>uxQueueMessagesWaiting</code></td>
+<td>Number of items in the queue</td>
+</tr>
+<tr>
+<td><code>...FromISR</code></td>
+<td>ISR-safe versions</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q-why-use-a-queue-instead-of-a-global-variable">Q: Why use a
+queue instead of a global variable?</h3>
+<p>Global variables need manual protection, can cause race conditions,
+and force the reader to poll. Queues are thread-safe, ordered, buffered,
+and let tasks <strong>block efficiently</strong> (0% CPU while
+waiting).</p>
+<h3 id="q-how-do-you-send-large-data-efficiently">Q: How do you send
+large data efficiently?</h3>
+<p>Send a <strong>pointer</strong> to a buffer instead of copying the
+whole buffer, and make sure the buffer stays valid until the receiver
+has used it (e.g., use a memory pool).</p>
+<h3 id="q-what-is-a-queue-set">Q: What is a queue set?</h3>
+<p><code>xQueueCreateSet()</code> lets a task block on <strong>several
+queues and semaphores at once</strong>.</p>
+<hr />
+<h2 id="12-semaphore">12. Semaphore</h2>
+<h3 id="q-what-is-a-semaphore">Q: What is a semaphore?</h3>
+<p>A kernel object used for <strong>signalling and
+synchronization</strong>. It holds a count; <code>Give</code> increments
+it and <code>Take</code> decrements it (and blocks if the count is
+0).</p>
+<h3 id="q-what-types-are-there">Q: What types are there?</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Count</th>
+<th>Use case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Binary</strong></td>
+<td>0 or 1</td>
+<td>Event signalling (ISR to task)</td>
+</tr>
+<tr>
+<td><strong>Counting</strong></td>
+<td>0..N</td>
+<td>Counting events or managing N identical resources</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-1-binary-semaphore-for-deferred-interrupt-processing-button-exti">Example
+1: binary semaphore for deferred interrupt processing (button EXTI)</h3>
+<div class="sourceCode" id="cb23"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;semphr.h&quot;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>SemaphoreHandle_t xButtonSem<span class="op">;</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="co">// PC13 configured as EXTI, falling edge, NVIC priority &gt;= 5</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> HAL_GPIO_EXTI_Callback<span class="op">(</span><span class="dt">uint16_t</span> GPIO_Pin<span class="op">)</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>GPIO_Pin <span class="op">==</span> GPIO_PIN_13<span class="op">)</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>        BaseType_t xWoken <span class="op">=</span> pdFALSE<span class="op">;</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>        xSemaphoreGiveFromISR<span class="op">(</span>xButtonSem<span class="op">,</span> <span class="op">&amp;</span>xWoken<span class="op">);</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>        portYIELD_FROM_ISR<span class="op">(</span>xWoken<span class="op">);</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> ButtonHandlerTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">)</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>xSemaphoreTake<span class="op">(</span>xButtonSem<span class="op">,</span> portMAX_DELAY<span class="op">)</span> <span class="op">==</span> pdTRUE<span class="op">)</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>        <span class="op">{</span></span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>            printf<span class="op">(</span><span class="st">&quot;Button pressed! Doing heavy processing...</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>            HAL_GPIO_TogglePin<span class="op">(</span>GPIOA<span class="op">,</span> GPIO_PIN_5<span class="op">);</span></span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a><span class="co">// main: xButtonSem = xSemaphoreCreateBinary();</span></span></code></pre></div>
+<p><strong>Why?</strong> Keep ISRs <strong>short</strong>. The ISR only
+signals; the heavy work runs in a task, where it can be preempted and
+can call blocking APIs.</p>
+<h3 id="example-2-counting-semaphore-for-a-pool-of-3-buffers">Example 2:
+counting semaphore for a pool of 3 buffers</h3>
+<div class="sourceCode" id="cb24"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>SemaphoreHandle_t xBufPool<span class="op">;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> WorkerTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">)</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>xSemaphoreTake<span class="op">(</span>xBufPool<span class="op">,</span> pdMS_TO_TICKS<span class="op">(</span><span class="dv">100</span><span class="op">))</span> <span class="op">==</span> pdTRUE<span class="op">)</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>        <span class="op">{</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>            printf<span class="op">(</span><span class="st">&quot;</span><span class="sc">%s</span><span class="st"> got a buffer</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">,</span> pcTaskGetName<span class="op">(</span>NULL<span class="op">));</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>            vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">500</span><span class="op">));</span>      <span class="co">// use the buffer</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>            xSemaphoreGive<span class="op">(</span>xBufPool<span class="op">);</span>            <span class="co">// return it</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span> printf<span class="op">(</span><span class="st">&quot;</span><span class="sc">%s</span><span class="st">: no buffer free</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">,</span> pcTaskGetName<span class="op">(</span>NULL<span class="op">));</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>        vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">50</span><span class="op">));</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a><span class="co">// main: xBufPool = xSemaphoreCreateCounting(3, 3);  // max = 3, initial = 3</span></span></code></pre></div>
+<h3 id="example-3-counting-semaphore-to-count-events-no-event-lost">Example
+3: counting semaphore to count events (no event lost)</h3>
+<div class="sourceCode" id="cb25"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>xPulseSem <span class="op">=</span> xSemaphoreCreateCounting<span class="op">(</span><span class="dv">100</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co">// ISR: xSemaphoreGiveFromISR(xPulseSem, &amp;w);  (each pulse adds 1)</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co">// Task: while (xSemaphoreTake(xPulseSem, 0) == pdTRUE) pulses++;</span></span></code></pre></div>
+<hr />
+<h2 id="13-mutex">13. Mutex</h2>
+<h3 id="q-what-is-a-mutex">Q: What is a mutex?</h3>
+<p><strong>MUTual EXclusion:</strong> a lock that allows <strong>only
+one task at a time</strong> to access a shared resource (UART, I2C, SPI,
+LCD, shared struct).</p>
+<ul>
+<li>It has <strong>ownership</strong>: only the task that took it may
+give it back.</li>
+<li>It supports <strong>priority inheritance</strong>, which reduces
+priority inversion.</li>
+<li>It <strong>cannot be used from an ISR</strong>.</li>
+</ul>
+<h3 id="example-protecting-uart2-shared-by-several-tasks">Example:
+protecting UART2 shared by several tasks</h3>
+<p><strong>Without a mutex</strong>, the output is garbled:</p>
+<pre><code>TaHello sk2: frorm Taskm 1</code></pre>
+<p><strong>With a mutex:</strong></p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>SemaphoreHandle_t xUartMutex<span class="op">;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> SafePrintf<span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>fmt<span class="op">,</span> <span class="op">...)</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> buf<span class="op">[</span><span class="dv">128</span><span class="op">];</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">va_list</span> args<span class="op">;</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    va_start<span class="op">(</span>args<span class="op">,</span> fmt<span class="op">);</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    vsnprintf<span class="op">(</span>buf<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>buf<span class="op">),</span> fmt<span class="op">,</span> args<span class="op">);</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>    va_end<span class="op">(</span>args<span class="op">);</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>xSemaphoreTake<span class="op">(</span>xUartMutex<span class="op">,</span> pdMS_TO_TICKS<span class="op">(</span><span class="dv">100</span><span class="op">))</span> <span class="op">==</span> pdTRUE<span class="op">)</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>        HAL_UART_Transmit<span class="op">(&amp;</span>huart2<span class="op">,</span> <span class="op">(</span><span class="dt">uint8_t</span> <span class="op">*)</span>buf<span class="op">,</span> strlen<span class="op">(</span>buf<span class="op">),</span> HAL_MAX_DELAY<span class="op">);</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>        xSemaphoreGive<span class="op">(</span>xUartMutex<span class="op">);</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> Task1<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>a<span class="op">)</span> <span class="op">{</span> <span class="cf">for</span> <span class="op">(;;)</span> <span class="op">{</span> SafePrintf<span class="op">(</span><span class="st">&quot;Hello from Task 1</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">);</span> vTaskDelay<span class="op">(</span><span class="dv">10</span><span class="op">);</span> <span class="op">}</span> <span class="op">}</span></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> Task2<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>a<span class="op">)</span> <span class="op">{</span> <span class="cf">for</span> <span class="op">(;;)</span> <span class="op">{</span> SafePrintf<span class="op">(</span><span class="st">&quot;Hello from Task 2</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">);</span> vTaskDelay<span class="op">(</span><span class="dv">15</span><span class="op">);</span> <span class="op">}</span> <span class="op">}</span></span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a><span class="co">// main: xUartMutex = xSemaphoreCreateMutex();</span></span></code></pre></div>
+<h3 id="example-protecting-a-shared-i2c-bus-sensor--eeprom">Example:
+protecting a shared I2C bus (sensor + EEPROM)</h3>
+<div class="sourceCode" id="cb28"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>SemaphoreHandle_t xI2CMutex<span class="op">;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>HAL_StatusTypeDef I2C_Read_Safe<span class="op">(</span><span class="dt">uint16_t</span> addr<span class="op">,</span> <span class="dt">uint8_t</span> reg<span class="op">,</span> <span class="dt">uint8_t</span> <span class="op">*</span>data<span class="op">,</span> <span class="dt">uint16_t</span> len<span class="op">)</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    HAL_StatusTypeDef st <span class="op">=</span> HAL_ERROR<span class="op">;</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>xSemaphoreTake<span class="op">(</span>xI2CMutex<span class="op">,</span> pdMS_TO_TICKS<span class="op">(</span><span class="dv">50</span><span class="op">))</span> <span class="op">==</span> pdTRUE<span class="op">)</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>        st <span class="op">=</span> HAL_I2C_Mem_Read<span class="op">(&amp;</span>hi2c1<span class="op">,</span> addr <span class="op">&lt;&lt;</span> <span class="dv">1</span><span class="op">,</span> reg<span class="op">,</span> I2C_MEMADD_SIZE_8BIT<span class="op">,</span> data<span class="op">,</span> len<span class="op">,</span> <span class="dv">100</span><span class="op">);</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>        xSemaphoreGive<span class="op">(</span>xI2CMutex<span class="op">);</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> st<span class="op">;</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="q-what-is-the-difference-between-a-mutex-and-a-binary-semaphore-most-asked">Q:
+What is the difference between a mutex and a binary semaphore? (MOST
+ASKED)</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Mutex</th>
+<th>Binary Semaphore</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Purpose</td>
+<td><strong>Locking</strong> a resource</td>
+<td><strong>Signalling</strong> an event</td>
+</tr>
+<tr>
+<td>Ownership</td>
+<td>Yes; only the owner can release it</td>
+<td>No; any task or ISR can give it</td>
+</tr>
+<tr>
+<td>Priority inheritance</td>
+<td><strong>Yes</strong></td>
+<td>No</td>
+</tr>
+<tr>
+<td>Use in an ISR</td>
+<td><strong>No</strong></td>
+<td>Yes (<code>GiveFromISR</code>)</td>
+</tr>
+<tr>
+<td>Initial state</td>
+<td>Available (1)</td>
+<td>Empty (0)</td>
+</tr>
+<tr>
+<td>Analogy</td>
+<td>Key to a bathroom</td>
+<td>Doorbell / flag</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q-what-is-priority-inversion-mars-pathfinder-1997">Q: What is
+priority inversion? (Mars Pathfinder, 1997)</h3>
+<pre><code>Priority
+ High (H) |      [H runs]--wants mutex--X (blocked).............[H gets mutex]
+ Med  (M) |                         [====== M runs for a long time ======]
+ Low  (L) | [L takes mutex]...[L]                                    [L gives]
+          +--------------------------------------------------------------&gt; time
+          H is effectively blocked by M, a LOWER priority task -&gt; INVERSION!</code></pre>
+<p><strong>Solutions:</strong></p>
+<ol type="1">
+<li><strong>Priority inheritance</strong> (FreeRTOS mutexes): L
+temporarily runs at H&#39;s priority, so M cannot preempt it.</li>
+<li><strong>Priority ceiling protocol:</strong> the mutex holder is
+raised to the highest priority of any task that uses the mutex.</li>
+<li>Keep critical sections short; avoid sharing resources across very
+different priorities.</li>
+</ol>
+<h3 id="q-what-is-a-deadlock">Q: What is a deadlock?</h3>
+<pre><code>Task A: Take(M1) ... Take(M2)   &lt;- waits for M2, which B holds
+Task B: Take(M2) ... Take(M1)   &lt;- waits for M1, which A holds
+=&gt; both are blocked forever</code></pre>
+<p><strong>Prevention:</strong></p>
+<ul>
+<li>Always take mutexes in the <strong>same global order</strong>.</li>
+<li>Use <strong>timeouts</strong> instead of <code>portMAX_DELAY</code>
+and handle failure.</li>
+<li>Avoid holding one lock while waiting for another.</li>
+<li>Use a single gatekeeper task that owns the resource.</li>
+</ul>
+<h3 id="q-what-is-a-recursive-mutex">Q: What is a recursive mutex?</h3>
+<p>The same task can take it several times; it must give it back the
+same number of times.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>xRecMutex <span class="op">=</span> xSemaphoreCreateRecursiveMutex<span class="op">();</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>xSemaphoreTakeRecursive<span class="op">(</span>xRecMutex<span class="op">,</span> portMAX_DELAY<span class="op">);</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>xSemaphoreTakeRecursive<span class="op">(</span>xRecMutex<span class="op">,</span> portMAX_DELAY<span class="op">);</span>   <span class="co">// OK, no self-deadlock</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>xSemaphoreGiveRecursive<span class="op">(</span>xRecMutex<span class="op">);</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>xSemaphoreGiveRecursive<span class="op">(</span>xRecMutex<span class="op">);</span></span></code></pre></div>
+<h3 id="q-what-is-a-gatekeeper-task">Q: What is a gatekeeper task?</h3>
+<p>A single task that <strong>owns</strong> a resource; other tasks send
+requests to it through a queue. No mutex is needed, and there is no
+priority inversion on that resource.</p>
+<hr />
+<h2 id="14-event-flags-event-groups">14. Event Flags (Event Groups)</h2>
+<h3 id="q-what-are-event-flags">Q: What are event flags?</h3>
+<p>A group of bits (24 usable bits in a 32-bit <code>EventBits_t</code>)
+in which <strong>each bit represents an event</strong>. Tasks can wait
+for:</p>
+<ul>
+<li><strong>ANY</strong> of the bits (OR logic), or</li>
+<li><strong>ALL</strong> of the bits (AND logic).</li>
+</ul>
+<p>Several tasks can wait on the same group, and all of them are woken
+together (broadcast).</p>
+<h3 id="example-start-the-cloud-upload-only-when-wifi-sensor-and-rtc-are-all-ready">Example:
+start the cloud upload only when WiFi, sensor and RTC are all ready</h3>
+<div class="sourceCode" id="cb32"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;event_groups.h&quot;</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#define EVT_WIFI_READY    </span><span class="op">(</span><span class="dv">1</span><span class="pp"> </span><span class="op">&lt;&lt;</span><span class="pp"> </span><span class="dv">0</span><span class="op">)</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#define EVT_SENSOR_READY  </span><span class="op">(</span><span class="dv">1</span><span class="pp"> </span><span class="op">&lt;&lt;</span><span class="pp"> </span><span class="dv">1</span><span class="op">)</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#define EVT_RTC_SYNCED    </span><span class="op">(</span><span class="dv">1</span><span class="pp"> </span><span class="op">&lt;&lt;</span><span class="pp"> </span><span class="dv">2</span><span class="op">)</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#define EVT_ALL_READY     </span><span class="op">(</span><span class="pp">EVT_WIFI_READY </span><span class="op">|</span><span class="pp"> EVT_SENSOR_READY </span><span class="op">|</span><span class="pp"> EVT_RTC_SYNCED</span><span class="op">)</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>EventGroupHandle_t xSysEvents<span class="op">;</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> WifiInitTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>a<span class="op">)</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>    vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">2000</span><span class="op">));</span>   <span class="co">// simulate connecting</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">&quot;WiFi connected</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    xEventGroupSetBits<span class="op">(</span>xSysEvents<span class="op">,</span> EVT_WIFI_READY<span class="op">);</span></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>    vTaskDelete<span class="op">(</span>NULL<span class="op">);</span></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> SensorInitTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>a<span class="op">)</span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>    vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">500</span><span class="op">));</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">&quot;Sensor ready</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>    xEventGroupSetBits<span class="op">(</span>xSysEvents<span class="op">,</span> EVT_SENSOR_READY<span class="op">);</span></span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>    vTaskDelete<span class="op">(</span>NULL<span class="op">);</span></span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> RtcSyncTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>a<span class="op">)</span></span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>    vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">1200</span><span class="op">));</span></span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">&quot;RTC synced</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a>    xEventGroupSetBits<span class="op">(</span>xSysEvents<span class="op">,</span> EVT_RTC_SYNCED<span class="op">);</span></span>
+<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a>    vTaskDelete<span class="op">(</span>NULL<span class="op">);</span></span>
+<span id="cb32-32"><a href="#cb32-32" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb32-33"><a href="#cb32-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-34"><a href="#cb32-34" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> CloudTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>a<span class="op">)</span></span>
+<span id="cb32-35"><a href="#cb32-35" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb32-36"><a href="#cb32-36" aria-hidden="true" tabindex="-1"></a>    EventBits_t bits <span class="op">=</span> xEventGroupWaitBits<span class="op">(</span></span>
+<span id="cb32-37"><a href="#cb32-37" aria-hidden="true" tabindex="-1"></a>        xSysEvents<span class="op">,</span></span>
+<span id="cb32-38"><a href="#cb32-38" aria-hidden="true" tabindex="-1"></a>        EVT_ALL_READY<span class="op">,</span></span>
+<span id="cb32-39"><a href="#cb32-39" aria-hidden="true" tabindex="-1"></a>        pdFALSE<span class="op">,</span>        <span class="co">// xClearOnExit: keep the bits set</span></span>
+<span id="cb32-40"><a href="#cb32-40" aria-hidden="true" tabindex="-1"></a>        pdTRUE<span class="op">,</span>         <span class="co">// xWaitForAllBits: AND logic</span></span>
+<span id="cb32-41"><a href="#cb32-41" aria-hidden="true" tabindex="-1"></a>        portMAX_DELAY<span class="op">);</span></span>
+<span id="cb32-42"><a href="#cb32-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-43"><a href="#cb32-43" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">&quot;All ready (0x</span><span class="sc">%02lX</span><span class="st">), starting upload</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">,</span> bits<span class="op">);</span></span>
+<span id="cb32-44"><a href="#cb32-44" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span> <span class="op">{</span> printf<span class="op">(</span><span class="st">&quot;Uploading...</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">);</span> vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">5000</span><span class="op">));</span> <span class="op">}</span></span>
+<span id="cb32-45"><a href="#cb32-45" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb32-46"><a href="#cb32-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-47"><a href="#cb32-47" aria-hidden="true" tabindex="-1"></a><span class="co">// main: xSysEvents = xEventGroupCreate();</span></span></code></pre></div>
+<h3 id="example-wait-for-any-event-error-or-stop-button">Example: wait
+for ANY event (error or stop button)</h3>
+<div class="sourceCode" id="cb33"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>EventBits_t b <span class="op">=</span> xEventGroupWaitBits<span class="op">(</span>xSysEvents<span class="op">,</span> EVT_ERROR <span class="op">|</span> EVT_STOP<span class="op">,</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>                                    pdTRUE<span class="op">,</span> pdFALSE<span class="op">,</span> portMAX_DELAY<span class="op">);</span>  <span class="co">// OR logic</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>b <span class="op">&amp;</span> EVT_ERROR<span class="op">)</span> HandleError<span class="op">();</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>b <span class="op">&amp;</span> EVT_STOP<span class="op">)</span>  StopMotor<span class="op">();</span></span></code></pre></div>
+<h3 id="q-how-do-you-set-event-bits-from-an-isr">Q: How do you set event
+bits from an ISR?</h3>
+<p><code>xEventGroupSetBitsFromISR()</code> defers the work to the timer
+daemon task, so it requires <code>configUSE_TIMERS = 1</code>.</p>
+<h3 id="q-what-is-xeventgroupsync">Q: What is
+<code>xEventGroupSync()</code>?</h3>
+<p>A <strong>barrier</strong>: several tasks each set their own bit and
+wait until all bits are set, then they all continue together (task
+rendezvous).</p>
+<h3 id="q-event-flags-vs-semaphore-vs-queue">Q: Event flags vs.
+semaphore vs. queue?</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Semaphore</th>
+<th>Queue</th>
+<th>Event Group</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Carries data</td>
+<td>No</td>
+<td><strong>Yes</strong></td>
+<td>No (bits only)</td>
+</tr>
+<tr>
+<td>Multiple conditions</td>
+<td>No</td>
+<td>No</td>
+<td><strong>Yes (AND/OR)</strong></td>
+</tr>
+<tr>
+<td>Wakes multiple tasks</td>
+<td>No (one)</td>
+<td>No (one)</td>
+<td><strong>Yes (broadcast)</strong></td>
+</tr>
+<tr>
+<td>Usable from an ISR</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes (deferred)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="15-task-notifications">15. Task Notifications</h2>
+<h3 id="q-what-are-task-notifications">Q: What are task
+notifications?</h3>
+<p>Every task has a built-in 32-bit <strong>notification value</strong>.
+You can signal a task <strong>directly</strong>, without creating a
+separate object. This is <strong>up to 45% faster and uses less
+RAM</strong> than semaphores or queues. <strong>Limitation:</strong>
+there is only one receiver (a specific task), and the sender cannot
+block waiting for the receiver.</p>
+<h3 id="example-replace-a-binary-semaphore-isr-to-task">Example: replace
+a binary semaphore (ISR to task)</h3>
+<div class="sourceCode" id="cb34"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>TaskHandle_t hProcTask<span class="op">;</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> HAL_ADC_ConvCpltCallback<span class="op">(</span>ADC_HandleTypeDef <span class="op">*</span>hadc<span class="op">)</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>    BaseType_t w <span class="op">=</span> pdFALSE<span class="op">;</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    vTaskNotifyGiveFromISR<span class="op">(</span>hProcTask<span class="op">,</span> <span class="op">&amp;</span>w<span class="op">);</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    portYIELD_FROM_ISR<span class="op">(</span>w<span class="op">);</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> ProcTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>a<span class="op">)</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>        ulTaskNotifyTake<span class="op">(</span>pdTRUE<span class="op">,</span> portMAX_DELAY<span class="op">);</span>   <span class="co">// acts like a binary semaphore</span></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>        <span class="dt">uint32_t</span> v <span class="op">=</span> HAL_ADC_GetValue<span class="op">(&amp;</span>hadc1<span class="op">);</span></span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">&quot;ADC = </span><span class="sc">%lu\r\n</span><span class="st">&quot;</span><span class="op">,</span> v<span class="op">);</span></span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>        HAL_ADC_Start_IT<span class="op">(&amp;</span>hadc1<span class="op">);</span></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<hr />
+<h2 id="16-software-timers">16. Software Timers</h2>
+<h3 id="q-what-is-a-software-timer">Q: What is a software timer?</h3>
+<p>A callback that runs after a delay (<strong>one-shot</strong>) or
+periodically (<strong>auto-reload</strong>). The callback runs in the
+<strong>timer daemon (service) task</strong>, not in an ISR.
+<strong>Rules:</strong> never block inside a timer callback; keep it
+short.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;timers.h&quot;</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>TimerHandle_t xHeartbeatTimer<span class="op">,</span> xBacklightTimer<span class="op">;</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> HeartbeatCb<span class="op">(</span>TimerHandle_t t<span class="op">)</span> <span class="op">{</span> HAL_GPIO_TogglePin<span class="op">(</span>GPIOA<span class="op">,</span> GPIO_PIN_5<span class="op">);</span> <span class="op">}</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> BacklightOffCb<span class="op">(</span>TimerHandle_t t<span class="op">)</span> <span class="op">{</span> LCD_BacklightOff<span class="op">();</span> <span class="op">}</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="co">// main:</span></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>xHeartbeatTimer <span class="op">=</span> xTimerCreate<span class="op">(</span><span class="st">&quot;HB&quot;</span><span class="op">,</span> pdMS_TO_TICKS<span class="op">(</span><span class="dv">1000</span><span class="op">),</span> pdTRUE<span class="op">,</span>  NULL<span class="op">,</span> HeartbeatCb<span class="op">);</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>xBacklightTimer <span class="op">=</span> xTimerCreate<span class="op">(</span><span class="st">&quot;BL&quot;</span><span class="op">,</span> pdMS_TO_TICKS<span class="op">(</span><span class="dv">5000</span><span class="op">),</span> pdFALSE<span class="op">,</span> NULL<span class="op">,</span> BacklightOffCb<span class="op">);</span></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>xTimerStart<span class="op">(</span>xHeartbeatTimer<span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a><span class="co">// On a key press: turn the backlight on and restart the 5 s timeout</span></span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>LCD_BacklightOn<span class="op">();</span></span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>xTimerReset<span class="op">(</span>xBacklightTimer<span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span></code></pre></div>
+<hr />
+<h2 id="17-memory-management">17. Memory Management</h2>
+<h3 id="q-what-heap-schemes-does-freertos-provide">Q: What heap schemes
+does FreeRTOS provide?</h3>
+<table>
+<thead>
+<tr>
+<th>Scheme</th>
+<th>Free supported</th>
+<th>Combines adjacent free blocks</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>heap_1</td>
+<td>No</td>
+<td>-</td>
+<td>Allocate only; simplest; safety-critical use</td>
+</tr>
+<tr>
+<td>heap_2</td>
+<td>Yes</td>
+<td>No</td>
+<td>Fragments; legacy</td>
+</tr>
+<tr>
+<td>heap_3</td>
+<td>Yes</td>
+<td>-</td>
+<td>Wraps the C library <code>malloc</code>/<code>free</code> (not
+deterministic)</td>
+</tr>
+<tr>
+<td><strong>heap_4</strong></td>
+<td>Yes</td>
+<td><strong>Yes</strong></td>
+<td><strong>Most common; the STM32CubeMX default</strong></td>
+</tr>
+<tr>
+<td>heap_5</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Heap can span several RAM regions (e.g., SRAM1 + CCM)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q-why-avoid-malloc-in-embedded-systems">Q: Why avoid
+<code>malloc</code> in embedded systems?</h3>
+<ul>
+<li><strong>Not deterministic</strong> (its execution time varies).</li>
+<li><strong>Fragmentation</strong> over long run times.</li>
+<li><strong>Not thread-safe</strong> in some C libraries. <strong>Best
+practice:</strong> allocate everything at startup, or use static
+allocation.</li>
+</ul>
+<h3 id="q-how-do-you-detect-that-the-heap-ran-out">Q: How do you detect
+that the heap ran out?</h3>
+<div class="sourceCode" id="cb36"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> vApplicationMallocFailedHook<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span> printf<span class="op">(</span><span class="st">&quot;HEAP EXHAUSTED</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">);</span> <span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="dt">size_t</span> freeNow <span class="op">=</span> xPortGetFreeHeapSize<span class="op">();</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="dt">size_t</span> minEver <span class="op">=</span> xPortGetMinimumEverFreeHeapSize<span class="op">();</span></span></code></pre></div>
+<hr />
+<h2 id="18-interrupts-with-rtos-on-stm32">18. Interrupts with RTOS on
+STM32</h2>
+<h3 id="q-what-are-the-rules-for-isrs-in-an-rtos">Q: What are the rules
+for ISRs in an RTOS?</h3>
+<ol type="1">
+<li><strong>Use only <code>...FromISR()</code> APIs</strong> inside
+ISRs.</li>
+<li><strong>Never block</strong> in an ISR (no <code>vTaskDelay</code>,
+and no <code>xQueueReceive</code> with a timeout).</li>
+<li>Keep ISRs <strong>short</strong>; defer the work to a task
+(semaphore or notification).</li>
+<li>Call
+<strong><code>portYIELD_FROM_ISR(xHigherPriorityTaskWoken)</code></strong>
+at the end.</li>
+<li>The <strong>NVIC priority</strong> must be numerically <strong>&gt;=
+<code>configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY</code></strong>
+(e.g., 5) to call FreeRTOS APIs.</li>
+</ol>
+<h3 id="q-explain-the-stm32-interrupt-priority-numbering">Q: Explain the
+STM32 interrupt priority numbering.</h3>
+<p>On Cortex-M, a <strong>lower number means a higher
+urgency</strong>.</p>
+<pre><code>Priority 0..4  -&gt; Above the kernel: FreeRTOS APIs NOT allowed; never masked by the kernel
+                  (use for ultra-fast ISRs, e.g., motor PWM fault)
+Priority 5..15 -&gt; Can call ...FromISR() APIs; masked during critical sections</code></pre>
+<div class="sourceCode" id="cb38"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>HAL_NVIC_SetPriority<span class="op">(</span>EXTI15_10_IRQn<span class="op">,</span> <span class="dv">6</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span>   <span class="co">// OK for FreeRTOS calls</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>HAL_NVIC_SetPriority<span class="op">(</span>USART2_IRQn<span class="op">,</span>   <span class="dv">5</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span>    <span class="co">// OK</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>HAL_NVIC_SetPriority<span class="op">(</span>TIM1_BRK_IRQn<span class="op">,</span>  <span class="dv">2</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span>   <span class="co">// fast, NO RTOS calls inside</span></span></code></pre></div>
+<p>A wrong priority causes <code>configASSERT</code> failures or hard
+faults. <strong>This is a very common STM32 + FreeRTOS bug.</strong></p>
+<h3 id="q-what-is-xhigherprioritytaskwoken">Q: What is
+<code>xHigherPriorityTaskWoken</code>?</h3>
+<p>It is set to <code>pdTRUE</code> by a <code>FromISR</code> API if the
+call unblocked a task with a higher priority than the interrupted task.
+<code>portYIELD_FROM_ISR</code> then triggers PendSV, so the woken task
+runs <strong>immediately after the ISR exits</strong>, not at the next
+tick.</p>
+<h3 id="q-what-is-a-critical-section">Q: What is a critical
+section?</h3>
+<div class="sourceCode" id="cb39"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>taskENTER_CRITICAL<span class="op">();</span>              <span class="co">// masks interrupts at or below MAX_SYSCALL priority</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>shared_counter<span class="op">++;</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>taskEXIT_CRITICAL<span class="op">();</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>UBaseType_t s <span class="op">=</span> taskENTER_CRITICAL_FROM_ISR<span class="op">();</span>   <span class="co">// ISR version</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a><span class="co">/* ... */</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>taskEXIT_CRITICAL_FROM_ISR<span class="op">(</span>s<span class="op">);</span></span></code></pre></div>
+<p>Keep it <strong>very short</strong> (a few instructions). It raises
+interrupt latency for every interrupt it masks.</p>
+<hr />
+<h2 id="19-complete-stm32-project-example">19. Complete STM32 Project
+Example</h2>
+<h3 id="smart-temperature-controller-nucleo-f446re">Smart Temperature
+Controller (NUCLEO-F446RE)</h3>
+<p><strong>Hardware:</strong> LM35 on PA0 (ADC1_IN0), fan via PWM on PA6
+(TIM3_CH1), LED on PA5, button on PC13, UART2 for logging.</p>
+<pre><code>  [ADC ISR] --notify--&gt; [SensorTask  P4] --queue--&gt; [ControlTask P3] --&gt; Fan PWM (TIM3)
+                                                          |
+                                                          | queue (log msgs)
+                                                          v
+  [Button EXTI] --sem--&gt; [ButtonTask P3]           [LoggerTask  P1] --mutex--&gt; UART2
+                              |
+                              +-- event group: MODE_AUTO / MODE_MANUAL
+  [Heartbeat software timer] --&gt; LED toggle every 1 s</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* ===================== main.c (core parts) ===================== */</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;main.h&quot;</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;FreeRTOS.h&quot;</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;task.h&quot;</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;queue.h&quot;</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;semphr.h&quot;</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;event_groups.h&quot;</span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;timers.h&quot;</span></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;string.h&gt;</span></span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdarg.h&gt;</span></span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a><span class="kw">extern</span> ADC_HandleTypeDef  hadc1<span class="op">;</span></span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a><span class="kw">extern</span> TIM_HandleTypeDef  htim3<span class="op">;</span></span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a><span class="kw">extern</span> UART_HandleTypeDef huart2<span class="op">;</span></span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a><span class="co">/* ---------- RTOS objects ---------- */</span></span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>TaskHandle_t       hSensorTask<span class="op">;</span></span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a>QueueHandle_t      xTempQueue<span class="op">;</span></span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>QueueHandle_t      xLogQueue<span class="op">;</span></span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>SemaphoreHandle_t  xButtonSem<span class="op">;</span></span>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a>SemaphoreHandle_t  xUartMutex<span class="op">;</span></span>
+<span id="cb41-23"><a href="#cb41-23" aria-hidden="true" tabindex="-1"></a>EventGroupHandle_t xModeEvents<span class="op">;</span></span>
+<span id="cb41-24"><a href="#cb41-24" aria-hidden="true" tabindex="-1"></a>TimerHandle_t      xHeartbeat<span class="op">;</span></span>
+<span id="cb41-25"><a href="#cb41-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-26"><a href="#cb41-26" aria-hidden="true" tabindex="-1"></a><span class="pp">#define MODE_AUTO    </span><span class="op">(</span><span class="dv">1</span><span class="pp"> </span><span class="op">&lt;&lt;</span><span class="pp"> </span><span class="dv">0</span><span class="op">)</span></span>
+<span id="cb41-27"><a href="#cb41-27" aria-hidden="true" tabindex="-1"></a><span class="pp">#define MODE_MANUAL  </span><span class="op">(</span><span class="dv">1</span><span class="pp"> </span><span class="op">&lt;&lt;</span><span class="pp"> </span><span class="dv">1</span><span class="op">)</span></span>
+<span id="cb41-28"><a href="#cb41-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-29"><a href="#cb41-29" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span> <span class="dt">char</span> text<span class="op">[</span><span class="dv">64</span><span class="op">];</span> <span class="op">}</span> LogMsg_t<span class="op">;</span></span>
+<span id="cb41-30"><a href="#cb41-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-31"><a href="#cb41-31" aria-hidden="true" tabindex="-1"></a><span class="co">/* ---------- Helpers ---------- */</span></span>
+<span id="cb41-32"><a href="#cb41-32" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span> Log<span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>fmt<span class="op">,</span> <span class="op">...)</span></span>
+<span id="cb41-33"><a href="#cb41-33" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb41-34"><a href="#cb41-34" aria-hidden="true" tabindex="-1"></a>    LogMsg_t m<span class="op">;</span></span>
+<span id="cb41-35"><a href="#cb41-35" aria-hidden="true" tabindex="-1"></a>    <span class="dt">va_list</span> a<span class="op">;</span> va_start<span class="op">(</span>a<span class="op">,</span> fmt<span class="op">);</span></span>
+<span id="cb41-36"><a href="#cb41-36" aria-hidden="true" tabindex="-1"></a>    vsnprintf<span class="op">(</span>m<span class="op">.</span>text<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>m<span class="op">.</span>text<span class="op">),</span> fmt<span class="op">,</span> a<span class="op">);</span></span>
+<span id="cb41-37"><a href="#cb41-37" aria-hidden="true" tabindex="-1"></a>    va_end<span class="op">(</span>a<span class="op">);</span></span>
+<span id="cb41-38"><a href="#cb41-38" aria-hidden="true" tabindex="-1"></a>    xQueueSend<span class="op">(</span>xLogQueue<span class="op">,</span> <span class="op">&amp;</span>m<span class="op">,</span> <span class="dv">0</span><span class="op">);</span>              <span class="co">// never block the caller</span></span>
+<span id="cb41-39"><a href="#cb41-39" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb41-40"><a href="#cb41-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-41"><a href="#cb41-41" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span> Fan_SetDuty<span class="op">(</span><span class="dt">uint8_t</span> pct<span class="op">)</span></span>
+<span id="cb41-42"><a href="#cb41-42" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb41-43"><a href="#cb41-43" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint32_t</span> arr <span class="op">=</span> __HAL_TIM_GET_AUTORELOAD<span class="op">(&amp;</span>htim3<span class="op">);</span></span>
+<span id="cb41-44"><a href="#cb41-44" aria-hidden="true" tabindex="-1"></a>    __HAL_TIM_SET_COMPARE<span class="op">(&amp;</span>htim3<span class="op">,</span> TIM_CHANNEL_1<span class="op">,</span> <span class="op">(</span>arr <span class="op">+</span> <span class="dv">1</span><span class="op">)</span> <span class="op">*</span> pct <span class="op">/</span> <span class="dv">100</span><span class="op">);</span></span>
+<span id="cb41-45"><a href="#cb41-45" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb41-46"><a href="#cb41-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-47"><a href="#cb41-47" aria-hidden="true" tabindex="-1"></a><span class="co">/* ---------- ISRs / callbacks ---------- */</span></span>
+<span id="cb41-48"><a href="#cb41-48" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> HAL_ADC_ConvCpltCallback<span class="op">(</span>ADC_HandleTypeDef <span class="op">*</span>hadc<span class="op">)</span></span>
+<span id="cb41-49"><a href="#cb41-49" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb41-50"><a href="#cb41-50" aria-hidden="true" tabindex="-1"></a>    BaseType_t w <span class="op">=</span> pdFALSE<span class="op">;</span></span>
+<span id="cb41-51"><a href="#cb41-51" aria-hidden="true" tabindex="-1"></a>    vTaskNotifyGiveFromISR<span class="op">(</span>hSensorTask<span class="op">,</span> <span class="op">&amp;</span>w<span class="op">);</span></span>
+<span id="cb41-52"><a href="#cb41-52" aria-hidden="true" tabindex="-1"></a>    portYIELD_FROM_ISR<span class="op">(</span>w<span class="op">);</span></span>
+<span id="cb41-53"><a href="#cb41-53" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb41-54"><a href="#cb41-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-55"><a href="#cb41-55" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> HAL_GPIO_EXTI_Callback<span class="op">(</span><span class="dt">uint16_t</span> pin<span class="op">)</span></span>
+<span id="cb41-56"><a href="#cb41-56" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb41-57"><a href="#cb41-57" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>pin <span class="op">==</span> GPIO_PIN_13<span class="op">)</span></span>
+<span id="cb41-58"><a href="#cb41-58" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb41-59"><a href="#cb41-59" aria-hidden="true" tabindex="-1"></a>        BaseType_t w <span class="op">=</span> pdFALSE<span class="op">;</span></span>
+<span id="cb41-60"><a href="#cb41-60" aria-hidden="true" tabindex="-1"></a>        xSemaphoreGiveFromISR<span class="op">(</span>xButtonSem<span class="op">,</span> <span class="op">&amp;</span>w<span class="op">);</span></span>
+<span id="cb41-61"><a href="#cb41-61" aria-hidden="true" tabindex="-1"></a>        portYIELD_FROM_ISR<span class="op">(</span>w<span class="op">);</span></span>
+<span id="cb41-62"><a href="#cb41-62" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb41-63"><a href="#cb41-63" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb41-64"><a href="#cb41-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-65"><a href="#cb41-65" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span> HeartbeatCb<span class="op">(</span>TimerHandle_t t<span class="op">)</span> <span class="op">{</span> HAL_GPIO_TogglePin<span class="op">(</span>GPIOA<span class="op">,</span> GPIO_PIN_5<span class="op">);</span> <span class="op">}</span></span>
+<span id="cb41-66"><a href="#cb41-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-67"><a href="#cb41-67" aria-hidden="true" tabindex="-1"></a><span class="co">/* ---------- Tasks ---------- */</span></span>
+<span id="cb41-68"><a href="#cb41-68" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> SensorTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">)</span>                      <span class="co">// Priority 4</span></span>
+<span id="cb41-69"><a href="#cb41-69" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb41-70"><a href="#cb41-70" aria-hidden="true" tabindex="-1"></a>    TickType_t last <span class="op">=</span> xTaskGetTickCount<span class="op">();</span></span>
+<span id="cb41-71"><a href="#cb41-71" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span></span>
+<span id="cb41-72"><a href="#cb41-72" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb41-73"><a href="#cb41-73" aria-hidden="true" tabindex="-1"></a>        HAL_ADC_Start_IT<span class="op">(&amp;</span>hadc1<span class="op">);</span></span>
+<span id="cb41-74"><a href="#cb41-74" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>ulTaskNotifyTake<span class="op">(</span>pdTRUE<span class="op">,</span> pdMS_TO_TICKS<span class="op">(</span><span class="dv">50</span><span class="op">)))</span></span>
+<span id="cb41-75"><a href="#cb41-75" aria-hidden="true" tabindex="-1"></a>        <span class="op">{</span></span>
+<span id="cb41-76"><a href="#cb41-76" aria-hidden="true" tabindex="-1"></a>            <span class="dt">uint32_t</span> raw <span class="op">=</span> HAL_ADC_GetValue<span class="op">(&amp;</span>hadc1<span class="op">);</span></span>
+<span id="cb41-77"><a href="#cb41-77" aria-hidden="true" tabindex="-1"></a>            <span class="dt">float</span> tempC <span class="op">=</span> raw <span class="op">*</span> <span class="fl">3.3</span><span class="bu">f</span> <span class="op">/</span> <span class="fl">4095.0</span><span class="bu">f</span> <span class="op">*</span> <span class="fl">100.0</span><span class="bu">f</span><span class="op">;</span></span>
+<span id="cb41-78"><a href="#cb41-78" aria-hidden="true" tabindex="-1"></a>            xQueueOverwrite<span class="op">(</span>xTempQueue<span class="op">,</span> <span class="op">&amp;</span>tempC<span class="op">);</span> <span class="co">// always keep the latest value</span></span>
+<span id="cb41-79"><a href="#cb41-79" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb41-80"><a href="#cb41-80" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span> Log<span class="op">(</span><span class="st">&quot;ADC timeout</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb41-81"><a href="#cb41-81" aria-hidden="true" tabindex="-1"></a>        vTaskDelayUntil<span class="op">(&amp;</span>last<span class="op">,</span> pdMS_TO_TICKS<span class="op">(</span><span class="dv">100</span><span class="op">));</span>   <span class="co">// exactly 10 Hz</span></span>
+<span id="cb41-82"><a href="#cb41-82" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb41-83"><a href="#cb41-83" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb41-84"><a href="#cb41-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-85"><a href="#cb41-85" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> ControlTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">)</span>                     <span class="co">// Priority 3</span></span>
+<span id="cb41-86"><a href="#cb41-86" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb41-87"><a href="#cb41-87" aria-hidden="true" tabindex="-1"></a>    <span class="dt">float</span> t<span class="op">;</span></span>
+<span id="cb41-88"><a href="#cb41-88" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span></span>
+<span id="cb41-89"><a href="#cb41-89" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb41-90"><a href="#cb41-90" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>xQueuePeek<span class="op">(</span>xTempQueue<span class="op">,</span> <span class="op">&amp;</span>t<span class="op">,</span> portMAX_DELAY<span class="op">)</span> <span class="op">==</span> pdPASS<span class="op">)</span></span>
+<span id="cb41-91"><a href="#cb41-91" aria-hidden="true" tabindex="-1"></a>        <span class="op">{</span></span>
+<span id="cb41-92"><a href="#cb41-92" aria-hidden="true" tabindex="-1"></a>            EventBits_t mode <span class="op">=</span> xEventGroupGetBits<span class="op">(</span>xModeEvents<span class="op">);</span></span>
+<span id="cb41-93"><a href="#cb41-93" aria-hidden="true" tabindex="-1"></a>            <span class="dt">uint8_t</span> duty<span class="op">;</span></span>
+<span id="cb41-94"><a href="#cb41-94" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="op">(</span>mode <span class="op">&amp;</span> MODE_AUTO<span class="op">)</span></span>
+<span id="cb41-95"><a href="#cb41-95" aria-hidden="true" tabindex="-1"></a>            <span class="op">{</span></span>
+<span id="cb41-96"><a href="#cb41-96" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span>      <span class="op">(</span>t <span class="op">&lt;</span> <span class="fl">25.0</span><span class="bu">f</span><span class="op">)</span> duty <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb41-97"><a href="#cb41-97" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>t <span class="op">&lt;</span> <span class="fl">30.0</span><span class="bu">f</span><span class="op">)</span> duty <span class="op">=</span> <span class="dv">40</span><span class="op">;</span></span>
+<span id="cb41-98"><a href="#cb41-98" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>t <span class="op">&lt;</span> <span class="fl">35.0</span><span class="bu">f</span><span class="op">)</span> duty <span class="op">=</span> <span class="dv">70</span><span class="op">;</span></span>
+<span id="cb41-99"><a href="#cb41-99" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>                duty <span class="op">=</span> <span class="dv">100</span><span class="op">;</span></span>
+<span id="cb41-100"><a href="#cb41-100" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb41-101"><a href="#cb41-101" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span> duty <span class="op">=</span> <span class="dv">100</span><span class="op">;</span>                     <span class="co">// manual = full speed</span></span>
+<span id="cb41-102"><a href="#cb41-102" aria-hidden="true" tabindex="-1"></a>            Fan_SetDuty<span class="op">(</span>duty<span class="op">);</span></span>
+<span id="cb41-103"><a href="#cb41-103" aria-hidden="true" tabindex="-1"></a>            Log<span class="op">(</span><span class="st">&quot;T=</span><span class="sc">%.1f</span><span class="st">C Fan=</span><span class="sc">%u%%</span><span class="st"> Mode=</span><span class="sc">%s\r\n</span><span class="st">&quot;</span><span class="op">,</span> t<span class="op">,</span> duty<span class="op">,</span></span>
+<span id="cb41-104"><a href="#cb41-104" aria-hidden="true" tabindex="-1"></a>                <span class="op">(</span>mode <span class="op">&amp;</span> MODE_AUTO<span class="op">)</span> <span class="op">?</span> <span class="st">&quot;AUTO&quot;</span> <span class="op">:</span> <span class="st">&quot;MANUAL&quot;</span><span class="op">);</span></span>
+<span id="cb41-105"><a href="#cb41-105" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb41-106"><a href="#cb41-106" aria-hidden="true" tabindex="-1"></a>        vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">500</span><span class="op">));</span></span>
+<span id="cb41-107"><a href="#cb41-107" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb41-108"><a href="#cb41-108" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb41-109"><a href="#cb41-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-110"><a href="#cb41-110" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> ButtonTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">)</span>                      <span class="co">// Priority 3</span></span>
+<span id="cb41-111"><a href="#cb41-111" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb41-112"><a href="#cb41-112" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span></span>
+<span id="cb41-113"><a href="#cb41-113" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb41-114"><a href="#cb41-114" aria-hidden="true" tabindex="-1"></a>        xSemaphoreTake<span class="op">(</span>xButtonSem<span class="op">,</span> portMAX_DELAY<span class="op">);</span></span>
+<span id="cb41-115"><a href="#cb41-115" aria-hidden="true" tabindex="-1"></a>        vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">50</span><span class="op">));</span>           <span class="co">// debounce</span></span>
+<span id="cb41-116"><a href="#cb41-116" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>xEventGroupGetBits<span class="op">(</span>xModeEvents<span class="op">)</span> <span class="op">&amp;</span> MODE_AUTO<span class="op">)</span></span>
+<span id="cb41-117"><a href="#cb41-117" aria-hidden="true" tabindex="-1"></a>        <span class="op">{</span></span>
+<span id="cb41-118"><a href="#cb41-118" aria-hidden="true" tabindex="-1"></a>            xEventGroupClearBits<span class="op">(</span>xModeEvents<span class="op">,</span> MODE_AUTO<span class="op">);</span></span>
+<span id="cb41-119"><a href="#cb41-119" aria-hidden="true" tabindex="-1"></a>            xEventGroupSetBits<span class="op">(</span>xModeEvents<span class="op">,</span> MODE_MANUAL<span class="op">);</span></span>
+<span id="cb41-120"><a href="#cb41-120" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb41-121"><a href="#cb41-121" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span></span>
+<span id="cb41-122"><a href="#cb41-122" aria-hidden="true" tabindex="-1"></a>        <span class="op">{</span></span>
+<span id="cb41-123"><a href="#cb41-123" aria-hidden="true" tabindex="-1"></a>            xEventGroupClearBits<span class="op">(</span>xModeEvents<span class="op">,</span> MODE_MANUAL<span class="op">);</span></span>
+<span id="cb41-124"><a href="#cb41-124" aria-hidden="true" tabindex="-1"></a>            xEventGroupSetBits<span class="op">(</span>xModeEvents<span class="op">,</span> MODE_AUTO<span class="op">);</span></span>
+<span id="cb41-125"><a href="#cb41-125" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb41-126"><a href="#cb41-126" aria-hidden="true" tabindex="-1"></a>        Log<span class="op">(</span><span class="st">&quot;Mode toggled</span><span class="sc">\r\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb41-127"><a href="#cb41-127" aria-hidden="true" tabindex="-1"></a>        xSemaphoreTake<span class="op">(</span>xButtonSem<span class="op">,</span> <span class="dv">0</span><span class="op">);</span>           <span class="co">// drop presses caused by bounce</span></span>
+<span id="cb41-128"><a href="#cb41-128" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb41-129"><a href="#cb41-129" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb41-130"><a href="#cb41-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-131"><a href="#cb41-131" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> LoggerTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">)</span>                      <span class="co">// Priority 1 (lowest)</span></span>
+<span id="cb41-132"><a href="#cb41-132" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb41-133"><a href="#cb41-133" aria-hidden="true" tabindex="-1"></a>    LogMsg_t m<span class="op">;</span></span>
+<span id="cb41-134"><a href="#cb41-134" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span></span>
+<span id="cb41-135"><a href="#cb41-135" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb41-136"><a href="#cb41-136" aria-hidden="true" tabindex="-1"></a>        xQueueReceive<span class="op">(</span>xLogQueue<span class="op">,</span> <span class="op">&amp;</span>m<span class="op">,</span> portMAX_DELAY<span class="op">);</span></span>
+<span id="cb41-137"><a href="#cb41-137" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>xSemaphoreTake<span class="op">(</span>xUartMutex<span class="op">,</span> pdMS_TO_TICKS<span class="op">(</span><span class="dv">100</span><span class="op">))</span> <span class="op">==</span> pdTRUE<span class="op">)</span></span>
+<span id="cb41-138"><a href="#cb41-138" aria-hidden="true" tabindex="-1"></a>        <span class="op">{</span></span>
+<span id="cb41-139"><a href="#cb41-139" aria-hidden="true" tabindex="-1"></a>            HAL_UART_Transmit<span class="op">(&amp;</span>huart2<span class="op">,</span> <span class="op">(</span><span class="dt">uint8_t</span> <span class="op">*)</span>m<span class="op">.</span>text<span class="op">,</span> strlen<span class="op">(</span>m<span class="op">.</span>text<span class="op">),</span> <span class="dv">100</span><span class="op">);</span></span>
+<span id="cb41-140"><a href="#cb41-140" aria-hidden="true" tabindex="-1"></a>            xSemaphoreGive<span class="op">(</span>xUartMutex<span class="op">);</span></span>
+<span id="cb41-141"><a href="#cb41-141" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb41-142"><a href="#cb41-142" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb41-143"><a href="#cb41-143" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb41-144"><a href="#cb41-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-145"><a href="#cb41-145" aria-hidden="true" tabindex="-1"></a><span class="co">/* ---------- Hooks ---------- */</span></span>
+<span id="cb41-146"><a href="#cb41-146" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> vApplicationStackOverflowHook<span class="op">(</span>TaskHandle_t t<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span>name<span class="op">)</span></span>
+<span id="cb41-147"><a href="#cb41-147" aria-hidden="true" tabindex="-1"></a><span class="op">{</span> __disable_irq<span class="op">();</span> <span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb41-148"><a href="#cb41-148" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> vApplicationMallocFailedHook<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb41-149"><a href="#cb41-149" aria-hidden="true" tabindex="-1"></a><span class="op">{</span> __disable_irq<span class="op">();</span> <span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb41-150"><a href="#cb41-150" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> vApplicationIdleHook<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb41-151"><a href="#cb41-151" aria-hidden="true" tabindex="-1"></a><span class="op">{</span> __WFI<span class="op">();</span> <span class="op">}</span>                                     <span class="co">// sleep until the next interrupt</span></span>
+<span id="cb41-152"><a href="#cb41-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-153"><a href="#cb41-153" aria-hidden="true" tabindex="-1"></a><span class="co">/* ---------- main ---------- */</span></span>
+<span id="cb41-154"><a href="#cb41-154" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb41-155"><a href="#cb41-155" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb41-156"><a href="#cb41-156" aria-hidden="true" tabindex="-1"></a>    HAL_Init<span class="op">();</span></span>
+<span id="cb41-157"><a href="#cb41-157" aria-hidden="true" tabindex="-1"></a>    SystemClock_Config<span class="op">();</span></span>
+<span id="cb41-158"><a href="#cb41-158" aria-hidden="true" tabindex="-1"></a>    MX_GPIO_Init<span class="op">();</span></span>
+<span id="cb41-159"><a href="#cb41-159" aria-hidden="true" tabindex="-1"></a>    MX_ADC1_Init<span class="op">();</span></span>
+<span id="cb41-160"><a href="#cb41-160" aria-hidden="true" tabindex="-1"></a>    MX_TIM3_Init<span class="op">();</span></span>
+<span id="cb41-161"><a href="#cb41-161" aria-hidden="true" tabindex="-1"></a>    MX_USART2_UART_Init<span class="op">();</span></span>
+<span id="cb41-162"><a href="#cb41-162" aria-hidden="true" tabindex="-1"></a>    HAL_TIM_PWM_Start<span class="op">(&amp;</span>htim3<span class="op">,</span> TIM_CHANNEL_1<span class="op">);</span></span>
+<span id="cb41-163"><a href="#cb41-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-164"><a href="#cb41-164" aria-hidden="true" tabindex="-1"></a>    xTempQueue  <span class="op">=</span> xQueueCreate<span class="op">(</span><span class="dv">1</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">float</span><span class="op">));</span>      <span class="co">// mailbox</span></span>
+<span id="cb41-165"><a href="#cb41-165" aria-hidden="true" tabindex="-1"></a>    xLogQueue   <span class="op">=</span> xQueueCreate<span class="op">(</span><span class="dv">16</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>LogMsg_t<span class="op">));</span></span>
+<span id="cb41-166"><a href="#cb41-166" aria-hidden="true" tabindex="-1"></a>    xButtonSem  <span class="op">=</span> xSemaphoreCreateBinary<span class="op">();</span></span>
+<span id="cb41-167"><a href="#cb41-167" aria-hidden="true" tabindex="-1"></a>    xUartMutex  <span class="op">=</span> xSemaphoreCreateMutex<span class="op">();</span></span>
+<span id="cb41-168"><a href="#cb41-168" aria-hidden="true" tabindex="-1"></a>    xModeEvents <span class="op">=</span> xEventGroupCreate<span class="op">();</span></span>
+<span id="cb41-169"><a href="#cb41-169" aria-hidden="true" tabindex="-1"></a>    xEventGroupSetBits<span class="op">(</span>xModeEvents<span class="op">,</span> MODE_AUTO<span class="op">);</span></span>
+<span id="cb41-170"><a href="#cb41-170" aria-hidden="true" tabindex="-1"></a>    xHeartbeat  <span class="op">=</span> xTimerCreate<span class="op">(</span><span class="st">&quot;HB&quot;</span><span class="op">,</span> pdMS_TO_TICKS<span class="op">(</span><span class="dv">1000</span><span class="op">),</span> pdTRUE<span class="op">,</span> NULL<span class="op">,</span> HeartbeatCb<span class="op">);</span></span>
+<span id="cb41-171"><a href="#cb41-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-172"><a href="#cb41-172" aria-hidden="true" tabindex="-1"></a>    configASSERT<span class="op">(</span>xTempQueue <span class="op">&amp;&amp;</span> xLogQueue <span class="op">&amp;&amp;</span> xButtonSem <span class="op">&amp;&amp;</span> xUartMutex <span class="op">&amp;&amp;</span> xModeEvents <span class="op">&amp;&amp;</span> xHeartbeat<span class="op">);</span></span>
+<span id="cb41-173"><a href="#cb41-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-174"><a href="#cb41-174" aria-hidden="true" tabindex="-1"></a>    xTaskCreate<span class="op">(</span>SensorTask<span class="op">,</span>  <span class="st">&quot;Sensor&quot;</span><span class="op">,</span>  <span class="dv">256</span><span class="op">,</span> NULL<span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="op">&amp;</span>hSensorTask<span class="op">);</span></span>
+<span id="cb41-175"><a href="#cb41-175" aria-hidden="true" tabindex="-1"></a>    xTaskCreate<span class="op">(</span>ControlTask<span class="op">,</span> <span class="st">&quot;Control&quot;</span><span class="op">,</span> <span class="dv">384</span><span class="op">,</span> NULL<span class="op">,</span> <span class="dv">3</span><span class="op">,</span> NULL<span class="op">);</span>   <span class="co">// printf-style formatting uses stack</span></span>
+<span id="cb41-176"><a href="#cb41-176" aria-hidden="true" tabindex="-1"></a>    xTaskCreate<span class="op">(</span>ButtonTask<span class="op">,</span>  <span class="st">&quot;Button&quot;</span><span class="op">,</span>  <span class="dv">256</span><span class="op">,</span> NULL<span class="op">,</span> <span class="dv">3</span><span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb41-177"><a href="#cb41-177" aria-hidden="true" tabindex="-1"></a>    xTaskCreate<span class="op">(</span>LoggerTask<span class="op">,</span>  <span class="st">&quot;Logger&quot;</span><span class="op">,</span>  <span class="dv">256</span><span class="op">,</span> NULL<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb41-178"><a href="#cb41-178" aria-hidden="true" tabindex="-1"></a>    xTimerStart<span class="op">(</span>xHeartbeat<span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb41-179"><a href="#cb41-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-180"><a href="#cb41-180" aria-hidden="true" tabindex="-1"></a>    vTaskStartScheduler<span class="op">();</span></span>
+<span id="cb41-181"><a href="#cb41-181" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb41-182"><a href="#cb41-182" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="what-this-project-demonstrates">What this project
+demonstrates</h3>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>Where it is used</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tasks and priorities</td>
+<td>4 tasks, P1–P4</td>
+</tr>
+<tr>
+<td>Scheduler / preemption</td>
+<td>Sensor (P4) preempts Logger (P1)</td>
+</tr>
+<tr>
+<td><code>vTaskDelayUntil</code></td>
+<td>Exact 10 Hz sampling</td>
+</tr>
+<tr>
+<td>Task notification</td>
+<td>ADC ISR to Sensor task</td>
+</tr>
+<tr>
+<td>Queue (mailbox)</td>
+<td>Latest temperature (<code>xQueueOverwrite</code> /
+<code>xQueuePeek</code>)</td>
+</tr>
+<tr>
+<td>Queue (FIFO)</td>
+<td>Log messages to Logger</td>
+</tr>
+<tr>
+<td>Binary semaphore</td>
+<td>Button ISR to Button task</td>
+</tr>
+<tr>
+<td>Mutex</td>
+<td>UART2 protection</td>
+</tr>
+<tr>
+<td>Event group</td>
+<td>AUTO/MANUAL mode</td>
+</tr>
+<tr>
+<td>Software timer</td>
+<td>Heartbeat LED</td>
+</tr>
+<tr>
+<td>Idle hook</td>
+<td>Low-power <code>__WFI()</code></td>
+</tr>
+<tr>
+<td>Hooks</td>
+<td>Stack overflow and malloc failure detection</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> printing <code>%f</code> with newlib-nano
+requires the linker flag <code>-u _printf_float</code> (STM32CubeIDE:
+Project Properties &gt; C/C++ Build &gt; Settings &gt; MCU Settings &gt;
+&quot;Use float with printf&quot;).</p>
+</blockquote>
+<hr />
+<h2 id="20-common-bugs--debugging">20. Common Bugs &amp; Debugging</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HardFault right after the scheduler starts</td>
+<td>Stack too small, or the heap is too small for the tasks</td>
+<td>Increase the stack/heap; check the return values of
+<code>xTaskCreate</code></td>
+</tr>
+<tr>
+<td><code>configASSERT</code> failure in
+<code>vPortValidateInterruptPriority</code></td>
+<td>ISR priority is numerically &lt; 5 and calls an RTOS API</td>
+<td>Set the NVIC priority to 5 or higher</td>
+</tr>
+<tr>
+<td><code>HAL_Delay</code> hangs</td>
+<td>HAL timebase on SysTick conflicts with FreeRTOS</td>
+<td>Use TIM6 as the HAL timebase</td>
+</tr>
+<tr>
+<td>A low-priority task never runs</td>
+<td>Starvation; a high-priority task busy-loops</td>
+<td>Add blocking calls</td>
+</tr>
+<tr>
+<td>Garbled UART output</td>
+<td>Shared resource without protection</td>
+<td>Mutex or gatekeeper task</td>
+</tr>
+<tr>
+<td>System freezes</td>
+<td>Deadlock or <code>portMAX_DELAY</code> everywhere</td>
+<td>Lock ordering and timeouts</td>
+</tr>
+<tr>
+<td>Random crashes</td>
+<td>Stack overflow</td>
+<td><code>configCHECK_FOR_STACK_OVERFLOW 2</code> plus high-water mark
+checks</td>
+</tr>
+<tr>
+<td><code>printf</code> with floats prints nothing</td>
+<td>newlib-nano without float support</td>
+<td><code>-u _printf_float</code></td>
+</tr>
+<tr>
+<td>Task parameter is corrupted</td>
+<td>A pointer to a local variable in <code>main</code> was passed</td>
+<td>Use static or global storage</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Debug tools:</strong> STM32CubeIDE FreeRTOS task-aware view,
+SEGGER SystemView, Percepio Tracealyzer, <code>vTaskList()</code>,
+<code>vTaskGetRunTimeStats()</code>.</p>
+<hr />
+<h2 id="21-rapid-fire-interview-questions">21. Rapid-Fire Interview
+Questions</h2>
+<h3 id="embedded-basics">Embedded basics</h3>
+<ol type="1">
+<li><strong>What is an embedded system?</strong> A dedicated computer
+inside a device that does a specific function with limited
+resources.</li>
+<li><strong>MCU vs. MPU?</strong> An MCU has CPU, memory and peripherals
+on one chip; an MPU is a CPU only.</li>
+<li><strong>What does <code>volatile</code> do?</strong> It prevents the
+compiler from optimizing away accesses to variables changed by hardware,
+ISRs or other tasks.</li>
+<li><strong>What is an ISR?</strong> An Interrupt Service Routine: the
+function that runs automatically when a hardware event occurs.</li>
+<li><strong>What is a watchdog timer?</strong> A hardware timer that
+resets the MCU if the software stops refreshing it (because it
+hung).</li>
+<li><strong>What is DMA?</strong> Direct Memory Access: it moves data
+between peripherals and memory without the CPU.</li>
+<li><strong>Polling vs. interrupts?</strong> Polling checks repeatedly
+and wastes CPU time; an interrupt notifies the CPU only when an event
+occurs.</li>
+<li><strong>Big vs. little endian?</strong> The byte order of multi-byte
+values; ARM Cortex-M is little-endian by default.</li>
+<li><strong>What do <code>static</code> inside a function and
+<code>static</code> at file scope mean?</strong> Inside a function, the
+value persists between calls; at file scope, the symbol is visible only
+in that file.</li>
+<li><strong>Name the communication protocols.</strong> UART
+(asynchronous, 2 wires), SPI (synchronous, 4 wires, fast, full-duplex),
+I2C (2 wires, addressed, multi-device), CAN (automotive,
+differential).</li>
+</ol>
+<h3 id="rtos">RTOS</h3>
+<ol start="11" type="1">
+<li><strong>What is an RTOS?</strong> An OS that guarantees
+deterministic timing for multitasking embedded systems.</li>
+<li><strong>Why use an RTOS?</strong> Multitasking, priorities,
+determinism, modularity, efficient CPU use and built-in IPC.</li>
+<li><strong>Does real-time mean fast?</strong> No. It means predictable
+and meeting deadlines.</li>
+<li><strong>Which scheduling does FreeRTOS use?</strong> Fixed-priority
+preemptive with round-robin among equal priorities.</li>
+<li><strong>What is a context switch?</strong> Saving the current task&#39;s
+registers and restoring the next task&#39;s registers (done in PendSV on
+Cortex-M).</li>
+<li><strong>Why is PendSV set to the lowest priority?</strong> So a
+context switch never interrupts an ISR.</li>
+<li><strong>What are the task states?</strong> Running, Ready, Blocked,
+Suspended (plus Deleted).</li>
+<li><strong>Mutex vs. semaphore?</strong> A mutex locks a resource
+(ownership, priority inheritance); a semaphore signals an event (no
+ownership, ISR-safe).</li>
+<li><strong>What is priority inversion and how is it fixed?</strong> A
+high-priority task is blocked by a lower-priority one through a shared
+mutex; fix it with priority inheritance or a priority ceiling.</li>
+<li><strong>What is a deadlock and how is it prevented?</strong>
+Circular waiting on locks; prevent it with consistent lock ordering and
+timeouts.</li>
+<li><strong>Queue vs. global variable?</strong> A queue is thread-safe,
+buffered and blocking; a global variable needs manual protection.</li>
+<li><strong>Event group vs. semaphore?</strong> An event group waits on
+several bits with AND/OR logic and can wake several tasks.</li>
+<li><strong>Can you call <code>vTaskDelay</code> in an ISR?</strong> No.
+Use only <code>FromISR</code> APIs, and never block.</li>
+<li><strong>What is <code>portYIELD_FROM_ISR</code>?</strong> It forces
+a context switch on ISR exit if a higher-priority task was woken.</li>
+<li><strong>What is the idle task?</strong> Priority 0; runs when
+nothing else can, cleans up deleted tasks, and can be used for low-power
+sleep.</li>
+<li><strong>What is the tick?</strong> The periodic SysTick interrupt
+that drives delays and time slicing.</li>
+<li><strong>What is tickless idle?</strong> The tick stops during long
+idle periods to save power (<code>configUSE_TICKLESS_IDLE</code>).</li>
+<li><strong>Why use TIM6 as the HAL timebase with FreeRTOS?</strong>
+SysTick is reserved for the FreeRTOS tick.</li>
+<li><strong>Which heap scheme is most commonly used?</strong> heap_4,
+which combines adjacent free blocks.</li>
+<li><strong>Task notification vs. semaphore?</strong> A notification is
+faster and lighter but has a single receiver task.</li>
+<li><strong>What is reentrancy?</strong> A function that is safe to call
+from several tasks or ISRs at the same time (no unprotected shared
+state).</li>
+<li><strong>What is a critical section?</strong> A short code region
+with interrupts or the scheduler disabled to protect shared data.</li>
+<li><strong>What is jitter?</strong> Variation in task timing; reduce it
+with <code>vTaskDelayUntil</code> and a good priority design.</li>
+<li><strong>What is Rate Monotonic Scheduling?</strong> Shorter period =
+higher priority; schedulable if utilization &lt;= n(2^(1/n) - 1), about
+69% for many tasks.</li>
+<li><strong>Hard vs. soft real-time?</strong> Hard: a missed deadline is
+a failure. Soft: a missed deadline only reduces quality.</li>
+</ol>
+<hr />
+<hr />
+<h2 id="22-autosar-os-vs-rtos-basic--extended-tasks">22. AUTOSAR OS vs.
+RTOS (Basic &amp; Extended Tasks)</h2>
+<h3 id="q-is-autosar-os-an-rtos">Q: Is AUTOSAR OS an RTOS?</h3>
+<p><strong>Yes.</strong> AUTOSAR OS <strong>is an RTOS</strong>. It is a
+real-time OS <strong>specification (standard)</strong> written for
+automotive ECUs. It is not a separate category of operating system.</p>
+<pre><code>                     RTOS (category: any real-time OS)
+                                 |
+        +------------------------+-------------------------+
+        |                        |                         |
+  General-purpose RTOS     Standard-based RTOS        Safety / domain RTOS
+  (own API, no standard)   (follow a specification)
+   - FreeRTOS               - OSEK/VDX OS  (ISO 17356-3)   - QNX, VxWorks
+   - Zephyr                 - AUTOSAR OS   (extends OSEK)  - SAFERTOS
+   - ThreadX                - POSIX RTOS profiles (PSE51/52)
+                            - ITRON (Japan)
+                            - ARINC 653 (avionics)</code></pre>
+<h3 id="q-what-is-the-difference-between-a-general-rtos-freertos-and-autosar-os">Q:
+What is the difference between a &quot;general RTOS&quot; (FreeRTOS) and AUTOSAR
+OS?</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>FreeRTOS (general RTOS)</th>
+<th>AUTOSAR OS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What it is</td>
+<td>A product (source code)</td>
+<td>A <strong>specification</strong>; vendors implement it</td>
+</tr>
+<tr>
+<td>Standard</td>
+<td>No formal standard API (CMSIS-RTOS wrapper is optional)</td>
+<td>Based on <strong>OSEK/VDX (ISO 17356-3)</strong> + AUTOSAR SWS
+OS</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td><strong>Dynamic</strong>: tasks/queues created at run time
+(<code>xTaskCreate</code>)</td>
+<td><strong>Static</strong>: everything defined at build time in an
+<strong>OIL/ARXML</strong> config file, then generated</td>
+</tr>
+<tr>
+<td>Task creation at run time</td>
+<td>Yes</td>
+<td><strong>No</strong></td>
+</tr>
+<tr>
+<td>Task types</td>
+<td>One type (any task can block)</td>
+<td><strong>Basic</strong> and <strong>Extended</strong></td>
+</tr>
+<tr>
+<td>Inter-task communication</td>
+<td>Queues, semaphores, mutexes, event groups</td>
+<td><strong>Events</strong>, <strong>Resources</strong> (priority
+ceiling), IOC (inter-OS-application communication)</td>
+</tr>
+<tr>
+<td>Mutual exclusion</td>
+<td>Mutex with <strong>priority inheritance</strong></td>
+<td><strong>Resources</strong> with <strong>priority ceiling
+protocol</strong> (no deadlock, no inversion)</td>
+</tr>
+<tr>
+<td>Timing</td>
+<td>Software timers</td>
+<td><strong>Counters, Alarms, Schedule Tables</strong></td>
+</tr>
+<tr>
+<td>Safety features</td>
+<td>Basic (stack overflow check)</td>
+<td><strong>Memory protection, timing protection,
+OS-Applications</strong> (Scalability Classes SC1–SC4)</td>
+</tr>
+<tr>
+<td>Safety certification</td>
+<td>SAFERTOS variant</td>
+<td>Implementations certified to <strong>ISO 26262 up to
+ASIL-D</strong></td>
+</tr>
+<tr>
+<td>Typical use</td>
+<td>IoT, consumer, industrial</td>
+<td>Automotive ECUs (engine, brakes, body control)</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>Free (MIT license)</td>
+<td>Commercial (Vector, ETAS, Elektrobit, ...)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q-which-standard-does-an-rtos-follow">Q: Which standard does an
+RTOS follow?</h3>
+<p><strong>An RTOS does not have to follow any standard.</strong> It
+depends on the RTOS: | Standard | Domain | Examples | |---|---|---| |
+<strong>OSEK/VDX OS (ISO 17356-3)</strong> | Automotive (older) | ERIKA
+Enterprise, Trampoline | | <strong>AUTOSAR OS</strong> (extends OSEK) |
+Automotive (current) | Vector MICROSAR OS, ETAS RTA-OS, EB tresos
+AutoCore OS | | <strong>POSIX (IEEE 1003.13 PSE51–54)</strong> | General
+/ industrial | QNX, VxWorks, NuttX, RTEMS | | <strong>ARINC 653</strong>
+| Avionics | VxWorks 653, PikeOS, LynxOS-178 | | <strong>ITRON /
+μITRON</strong> | Japanese consumer electronics | TOPPERS | |
+<strong>CMSIS-RTOS v2</strong> | ARM Cortex-M API (a wrapper API) | Keil
+RTX5, FreeRTOS via wrapper | | <em>None (own API)</em> | General
+embedded | <strong>FreeRTOS</strong>, Zephyr, ThreadX |</p>
+<h3 id="q-is-autosar-os-defined-by-microsar">Q: Is AUTOSAR OS defined by
+MICROSAR?</h3>
+<p><strong>No.</strong> That reverses the relationship:</p>
+<ul>
+<li><strong>AUTOSAR</strong> (the consortium: BMW, Bosch, Continental,
+Toyota, VW, ...) <strong>writes the specification</strong> (the SWS OS
+document).</li>
+<li><strong>MICROSAR</strong> is <strong>Vector Informatik&#39;s
+product</strong>, i.e. its <strong>implementation</strong> of the
+AUTOSAR standard. <strong>MICROSAR OS</strong> is Vector&#39;s AUTOSAR
+OS.</li>
+</ul>
+<pre><code> AUTOSAR specification (the &quot;rules&quot;)
+            |
+            | implemented by different vendors
+   +--------+-------------+--------------------+---------------------+
+   |                      |                    |                     |
+ Vector               ETAS (Bosch)         Elektrobit             Siemens (Mentor)
+ MICROSAR OS          RTA-OS               EB tresos AutoCore OS  Capital VSTAR OS</code></pre>
+<p>All of these follow the <strong>same AUTOSAR API</strong>
+(<code>ActivateTask</code>, <code>WaitEvent</code>,
+<code>SetEvent</code>, <code>GetResource</code>, ...), so application
+code can be ported between vendors.</p>
+<h3 id="q-what-are-the-autosar-os-scalability-classes">Q: What are the
+AUTOSAR OS Scalability Classes?</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Adds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SC1</strong></td>
+<td>OSEK OS + Schedule Tables (no protection)</td>
+</tr>
+<tr>
+<td><strong>SC2</strong></td>
+<td>SC1 + <strong>Timing protection</strong> (execution-time
+budgets)</td>
+</tr>
+<tr>
+<td><strong>SC3</strong></td>
+<td>SC1 + <strong>Memory protection</strong> (MPU) +
+OS-Applications</td>
+</tr>
+<tr>
+<td><strong>SC4</strong></td>
+<td>SC2 + SC3 (full protection; used for ASIL-D)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q-what-are-the-conformance-classes-osekautosar">Q: What are the
+conformance classes (OSEK/AUTOSAR)?</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Task types</th>
+<th>Multiple activations</th>
+<th>Tasks per priority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BCC1</strong></td>
+<td>Basic only</td>
+<td>No</td>
+<td>One</td>
+</tr>
+<tr>
+<td><strong>BCC2</strong></td>
+<td>Basic only</td>
+<td>Yes</td>
+<td>Several</td>
+</tr>
+<tr>
+<td><strong>ECC1</strong></td>
+<td>Basic + Extended</td>
+<td>No (basic)</td>
+<td>One</td>
+</tr>
+<tr>
+<td><strong>ECC2</strong></td>
+<td>Basic + Extended</td>
+<td>Yes (basic)</td>
+<td>Several</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q-what-is-the-difference-between-basic-and-extended-tasks">Q:
+What is the difference between basic and extended tasks?</h3>
+<p><strong>Basic task: 3 states (no Waiting)</strong></p>
+<pre><code>              activate
+ SUSPENDED ────────────► READY
+     ▲                  │   ▲
+     │ terminate        │   │ preempt
+     │                  ▼   │
+     └──────────────── RUNNING</code></pre>
+<p><strong>Extended task: 4 states (with Waiting)</strong></p>
+<pre><code>              activate
+ SUSPENDED ────────────► READY ◄───────────┐
+     ▲                  │   ▲               │ SetEvent()
+     │ terminate        │   │ preempt       │
+     │                  ▼   │               │
+     └──────────────── RUNNING ──────────► WAITING
+                              WaitEvent()</code></pre>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Basic Task</th>
+<th>Extended Task</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>States</td>
+<td>Suspended, Ready, Running (<strong>3</strong>)</td>
+<td>+ <strong>Waiting</strong> (<strong>4</strong>)</td>
+</tr>
+<tr>
+<td>Can wait for events</td>
+<td>No</td>
+<td>Yes (<code>WaitEvent</code>)</td>
+</tr>
+<tr>
+<td>Stack</td>
+<td><strong>Can share one stack</strong></td>
+<td>Needs its <strong>own stack</strong></td>
+</tr>
+<tr>
+<td>RAM usage</td>
+<td>Low</td>
+<td>Higher</td>
+</tr>
+<tr>
+<td>Execution</td>
+<td>Runs to completion</td>
+<td>Can pause in the middle</td>
+</tr>
+<tr>
+<td>Multiple activations</td>
+<td>Yes (BCC2/ECC2)</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Typical use</td>
+<td>Cyclic 1/10/100 ms jobs</td>
+<td>CAN handling, state machines, communication</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q-why-does-a-basic-task-have-no-waiting-state">Q: Why does a
+basic task have no Waiting state?</h3>
+<p>By design it <strong>runs to completion and never blocks halfway
+through</strong>. This means:</p>
+<ol type="1">
+<li>Its worst-case execution time is <strong>easy to analyze</strong>
+(deterministic).</li>
+<li>Several basic tasks can <strong>share a single stack</strong>, which
+saves RAM on small ECUs.</li>
+<li>There is <strong>no event-handling overhead</strong>.</li>
+</ol>
+<h3 id="example-code-autosar-os-api">Example code (AUTOSAR OS API)</h3>
+<div class="sourceCode" id="cb46"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Basic task: cyclic, activated every 10 ms by an Alarm */</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>TASK<span class="op">(</span>Task_10ms<span class="op">)</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>    ReadSensors<span class="op">();</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>    RunControlAlgorithm<span class="op">();</span></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>    UpdateActuators<span class="op">();</span></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>    TerminateTask<span class="op">();</span>                 <span class="co">/* must end, cannot wait */</span></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a><span class="co">/* Extended task: waits for events */</span></span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>TASK<span class="op">(</span>Task_CanHandler<span class="op">)</span></span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>    EventMaskType ev<span class="op">;</span></span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span></span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a>        WaitEvent<span class="op">(</span>EV_CAN_RX <span class="op">|</span> EV_TIMEOUT<span class="op">);</span>   <span class="co">/* RUNNING -&gt; WAITING */</span></span>
+<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a>        GetEvent<span class="op">(</span>Task_CanHandler<span class="op">,</span> <span class="op">&amp;</span>ev<span class="op">);</span></span>
+<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a>        ClearEvent<span class="op">(</span>ev<span class="op">);</span></span>
+<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>ev <span class="op">&amp;</span> EV_CAN_RX<span class="op">)</span>  ProcessCanMessage<span class="op">();</span></span>
+<span id="cb46-20"><a href="#cb46-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>ev <span class="op">&amp;</span> EV_TIMEOUT<span class="op">)</span> HandleTimeout<span class="op">();</span></span>
+<span id="cb46-21"><a href="#cb46-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb46-22"><a href="#cb46-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb46-23"><a href="#cb46-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-24"><a href="#cb46-24" aria-hidden="true" tabindex="-1"></a><span class="co">/* Category 2 ISR (allowed to call OS services) */</span></span>
+<span id="cb46-25"><a href="#cb46-25" aria-hidden="true" tabindex="-1"></a>ISR<span class="op">(</span>CAN_RX_ISR<span class="op">)</span></span>
+<span id="cb46-26"><a href="#cb46-26" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb46-27"><a href="#cb46-27" aria-hidden="true" tabindex="-1"></a>    SetEvent<span class="op">(</span>Task_CanHandler<span class="op">,</span> EV_CAN_RX<span class="op">);</span>   <span class="co">/* WAITING -&gt; READY */</span></span>
+<span id="cb46-28"><a href="#cb46-28" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb46-29"><a href="#cb46-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-30"><a href="#cb46-30" aria-hidden="true" tabindex="-1"></a><span class="co">/* Resource = mutual exclusion with priority ceiling */</span></span>
+<span id="cb46-31"><a href="#cb46-31" aria-hidden="true" tabindex="-1"></a>TASK<span class="op">(</span>Task_Logger<span class="op">)</span></span>
+<span id="cb46-32"><a href="#cb46-32" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb46-33"><a href="#cb46-33" aria-hidden="true" tabindex="-1"></a>    GetResource<span class="op">(</span>RES_SPI<span class="op">);</span></span>
+<span id="cb46-34"><a href="#cb46-34" aria-hidden="true" tabindex="-1"></a>    Spi_WriteFlash<span class="op">();</span></span>
+<span id="cb46-35"><a href="#cb46-35" aria-hidden="true" tabindex="-1"></a>    ReleaseResource<span class="op">(</span>RES_SPI<span class="op">);</span></span>
+<span id="cb46-36"><a href="#cb46-36" aria-hidden="true" tabindex="-1"></a>    TerminateTask<span class="op">();</span></span>
+<span id="cb46-37"><a href="#cb46-37" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="example-static-configuration-oil-file-osek-style">Example static
+configuration (OIL file, OSEK style)</h3>
+<pre><code>TASK Task_10ms {
+    PRIORITY = 5;
+    SCHEDULE = FULL;          /* preemptive */
+    ACTIVATION = 1;
+    AUTOSTART = FALSE;
+    RESOURCE = RES_SPI;
+};
+
+TASK Task_CanHandler {
+    PRIORITY = 8;
+    SCHEDULE = FULL;
+    ACTIVATION = 1;
+    EVENT = EV_CAN_RX;        /* having EVENTs makes it an EXTENDED task */
+    EVENT = EV_TIMEOUT;
+};
+
+ALARM Alarm_10ms {
+    COUNTER = SystemTimer;
+    ACTION = ACTIVATETASK { TASK = Task_10ms; };
+    AUTOSTART = TRUE { ALARMTIME = 10; CYCLETIME = 10; };
+};</code></pre>
+<p>In AUTOSAR the same data is written in <strong>ARXML</strong> and
+edited with tools such as <strong>Vector DaVinci Configurator</strong>
+or <strong>EB tresos Studio</strong>.</p>
+<h3 id="q-what-are-category-1-and-category-2-isrs">Q: What are Category
+1 and Category 2 ISRs?</h3>
+<table>
+<thead>
+<tr>
+<th>Category 1 ISR</th>
+<th>Category 2 ISR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Does <strong>not</strong> call OS services</td>
+<td><strong>Can</strong> call OS services (<code>SetEvent</code>,
+<code>ActivateTask</code>)</td>
+</tr>
+<tr>
+<td>Fastest, lowest overhead</td>
+<td>Managed by the OS (slightly more overhead)</td>
+</tr>
+<tr>
+<td>Like FreeRTOS ISRs above <code>MAX_SYSCALL</code> priority</td>
+<td>Like FreeRTOS ISRs that use <code>...FromISR</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="freertos-to-autosar-os-mapping">FreeRTOS to AUTOSAR OS
+mapping</h3>
+<table>
+<thead>
+<tr>
+<th>FreeRTOS</th>
+<th>AUTOSAR OS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>xTaskCreate()</code> (run time)</td>
+<td>Static config (OIL/ARXML), <code>ActivateTask()</code></td>
+</tr>
+<tr>
+<td>Blocked state</td>
+<td><strong>Waiting</strong> state (extended tasks only)</td>
+</tr>
+<tr>
+<td><code>xEventGroupWaitBits</code> / <code>SetBits</code></td>
+<td><code>WaitEvent</code> / <code>SetEvent</code></td>
+</tr>
+<tr>
+<td>Mutex (priority inheritance)</td>
+<td><strong>Resource</strong> (<code>GetResource</code>, priority
+ceiling)</td>
+</tr>
+<tr>
+<td>Software timer</td>
+<td><strong>Alarm</strong> / <strong>Schedule Table</strong></td>
+</tr>
+<tr>
+<td><code>vTaskDelete(NULL)</code></td>
+<td><code>TerminateTask()</code></td>
+</tr>
+<tr>
+<td>ISR using <code>FromISR</code> API</td>
+<td>Category 2 ISR</td>
+</tr>
+</tbody>
+</table>
+<h3 id="interview-answer-short">Interview answer (short)</h3>
+<blockquote>
+<p>&quot;AUTOSAR OS <strong>is</strong> an RTOS. It is a standardized RTOS
+specification for automotive, based on OSEK/VDX (ISO 17356-3). Unlike
+FreeRTOS, it is statically configured, uses basic and extended tasks,
+Resources with priority ceiling, Alarms and Schedule Tables, and adds
+memory and timing protection (SC1–SC4) for ISO 26262. The AUTOSAR
+consortium writes the spec; vendors implement it. <strong>Vector
+MICROSAR OS</strong>, ETAS RTA-OS and EB tresos AutoCore OS are all
+implementations. A general RTOS like FreeRTOS does not follow a standard
+and has its own API.&quot;</p>
+</blockquote>
+<hr />
+<p><em>Practice tip: build each example on a Nucleo board one by one
+(Tasks, then Queue, then Semaphore, then Mutex, then Event Group, then
+the full project), and watch the UART output in a serial terminal at
+115200 baud.</em></p>
+</body>
+</html>
