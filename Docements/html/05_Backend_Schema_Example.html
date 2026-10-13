@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>5. Backend Schema – TaskFlow</title>
+<link rel="stylesheet" href="doc-style.css"></head><body>
+<nav><a href="index.html">Home</a><a href="04_Design_Brief_Example.html">4. Design Brief</a><a href="05_Backend_Schema_Example.html">5. Backend Schema</a><a href="06_Implementation_Plan_Example.html">6. Implementation Plan</a></nav>
+
+<h1>5. Backend Schema Document – TaskFlow</h1>
+<h2>Document Info</h2>
+<table class="info">
+<tr><th>Project name</th><td>TaskFlow</td></tr>
+<tr><th>Document owner</th><td>Gayatri</td></tr>
+<tr><th>Version</th><td>1.0</td></tr>
+<tr><th>Date</th><td>2026-10-13</td></tr>
+<tr><th>Status</th><td>In review</td></tr>
+<tr><th>Database (from TRD)</th><td>PostgreSQL 16 &nbsp;|&nbsp; Backend: Node.js + Express REST API</td></tr>
+</table>
+
+<h2>1. Overview</h2>
+<p>Users belong to projects through a membership table. Each project has tasks; each task can have an assignee and comments.</p>
+
+<h2>2. Entities / Tables</h2>
+<h3>TBL-01: users</h3>
+<table>
+<tr><th>Field</th><th>Type</th><th>Required</th><th>Key</th><th>Default</th><th>Description</th></tr>
+<tr><td>id</td><td>UUID</td><td>Yes</td><td>PK</td><td>gen_random_uuid()</td><td>Unique user ID</td></tr>
+<tr><td>name</td><td>VARCHAR(100)</td><td>Yes</td><td></td><td></td><td>Full name</td></tr>
+<tr><td>email</td><td>VARCHAR(255)</td><td>Yes</td><td>Unique</td><td></td><td>Login email</td></tr>
+<tr><td>password_hash</td><td>VARCHAR(255)</td><td>Yes</td><td></td><td></td><td>bcrypt hash, never plain text</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP</td><td>Yes</td><td></td><td>now()</td><td>Created time</td></tr>
+</table>
+
+<h3>TBL-02: projects</h3>
+<table>
+<tr><th>Field</th><th>Type</th><th>Required</th><th>Key</th><th>Default</th><th>Description</th></tr>
+<tr><td>id</td><td>UUID</td><td>Yes</td><td>PK</td><td>gen_random_uuid()</td><td>Project ID</td></tr>
+<tr><td>name</td><td>VARCHAR(100)</td><td>Yes</td><td></td><td></td><td>Project name</td></tr>
+<tr><td>description</td><td>TEXT</td><td>No</td><td></td><td></td><td>Short description</td></tr>
+<tr><td>owner_id</td><td>UUID</td><td>Yes</td><td>FK → users.id</td><td></td><td>Creator / owner</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP</td><td>Yes</td><td></td><td>now()</td><td>Created time</td></tr>
+</table>
+
+<h3>TBL-03: project_members</h3>
+<table>
+<tr><th>Field</th><th>Type</th><th>Required</th><th>Key</th><th>Default</th><th>Description</th></tr>
+<tr><td>project_id</td><td>UUID</td><td>Yes</td><td>PK, FK → projects.id</td><td></td><td>Project</td></tr>
+<tr><td>user_id</td><td>UUID</td><td>Yes</td><td>PK, FK → users.id</td><td></td><td>Member</td></tr>
+<tr><td>role</td><td>VARCHAR(20)</td><td>Yes</td><td></td><td>'member'</td><td>'owner' or 'member'</td></tr>
+</table>
+
+<h3>TBL-04: tasks</h3>
+<table>
+<tr><th>Field</th><th>Type</th><th>Required</th><th>Key</th><th>Default</th><th>Description</th></tr>
+<tr><td>id</td><td>UUID</td><td>Yes</td><td>PK</td><td>gen_random_uuid()</td><td>Task ID</td></tr>
+<tr><td>project_id</td><td>UUID</td><td>Yes</td><td>FK → projects.id</td><td></td><td>Belongs to project</td></tr>
+<tr><td>title</td><td>VARCHAR(200)</td><td>Yes</td><td></td><td></td><td>Task title</td></tr>
+<tr><td>description</td><td>TEXT</td><td>No</td><td></td><td></td><td>Details</td></tr>
+<tr><td>status</td><td>VARCHAR(20)</td><td>Yes</td><td></td><td>'todo'</td><td>'todo' | 'in_progress' | 'done'</td></tr>
+<tr><td>assignee_id</td><td>UUID</td><td>No</td><td>FK → users.id</td><td>NULL</td><td>Assigned user</td></tr>
+<tr><td>due_date</td><td>DATE</td><td>No</td><td></td><td></td><td>Deadline</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP</td><td>Yes</td><td></td><td>now()</td><td>Created time</td></tr>
+</table>
+
+<h3>TBL-05: comments</h3>
+<table>
+<tr><th>Field</th><th>Type</th><th>Required</th><th>Key</th><th>Default</th><th>Description</th></tr>
+<tr><td>id</td><td>UUID</td><td>Yes</td><td>PK</td><td>gen_random_uuid()</td><td>Comment ID</td></tr>
+<tr><td>task_id</td><td>UUID</td><td>Yes</td><td>FK → tasks.id</td><td></td><td>Task</td></tr>
+<tr><td>user_id</td><td>UUID</td><td>Yes</td><td>FK → users.id</td><td></td><td>Author</td></tr>
+<tr><td>text</td><td>TEXT</td><td>Yes</td><td></td><td></td><td>Comment text</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP</td><td>Yes</td><td></td><td>now()</td><td>Created time</td></tr>
+</table>
+
+<h2>3. Relationships</h2>
+<table>
+<tr><th>From</th><th>To</th><th>Type</th><th>Via</th></tr>
+<tr><td>users</td><td>projects</td><td>N–N</td><td>project_members</td></tr>
+<tr><td>projects</td><td>tasks</td><td>1–N</td><td>tasks.project_id</td></tr>
+<tr><td>users</td><td>tasks</td><td>1–N</td><td>tasks.assignee_id</td></tr>
+<tr><td>tasks</td><td>comments</td><td>1–N</td><td>comments.task_id</td></tr>
+</table>
+
+<h2>4. ER Diagram</h2>
+<pre>
+ +---------+ 1     N +-----------------+ N     1 +----------+
+ |  users  |---------| project_members |---------| projects |
+ +---------+         +-----------------+         +----------+
+    | 1  | 1                                          | 1
+    |    |  (assignee)                                | N
+    |    +--------------------------N-------------+----------+
+    |                                             |  tasks   |
+    | 1                                           +----------+
+    |                                                   | 1
+    |                N +-----------+  N                 |
+    +------------------| comments  |--------------------+
+                       +-----------+
+</pre>
+
+<h2>5. API Endpoints</h2>
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Description</th><th>Auth</th></tr>
+<tr><td>POST</td><td>/api/auth/register</td><td>Create account</td><td>Public</td></tr>
+<tr><td>POST</td><td>/api/auth/login</td><td>Log in, returns JWT</td><td>Public</td></tr>
+<tr><td>GET</td><td>/api/projects</td><td>List my projects</td><td>JWT</td></tr>
+<tr><td>POST</td><td>/api/projects</td><td>Create project</td><td>JWT</td></tr>
+<tr><td>POST</td><td>/api/projects/:id/members</td><td>Add member by email</td><td>JWT (owner)</td></tr>
+<tr><td>GET</td><td>/api/projects/:id/tasks</td><td>List tasks in project</td><td>JWT (member)</td></tr>
+<tr><td>POST</td><td>/api/projects/:id/tasks</td><td>Create task</td><td>JWT (member)</td></tr>
+<tr><td>PATCH</td><td>/api/tasks/:id</td><td>Update task / change status</td><td>JWT (member)</td></tr>
+<tr><td>DELETE</td><td>/api/tasks/:id</td><td>Delete task</td><td>JWT (owner)</td></tr>
+<tr><td>GET / POST</td><td>/api/tasks/:id/comments</td><td>Read / add comments</td><td>JWT (member)</td></tr>
+</table>
+<h3>Example request / response</h3>
+<pre>
+POST /api/projects/7f3c.../tasks
+{ "title": "Create login page", "assignee_id": "a12b...", "due_date": "2026-10-20" }
+
+201 Created
+{ "id": "c91d...", "title": "Create login page", "status": "todo", "due_date": "2026-10-20" }
+</pre>
+
+<h2>6. Access Rules / Permissions</h2>
+<table>
+<tr><th>Resource</th><th>Read</th><th>Write</th></tr>
+<tr><td>Project</td><td>Members</td><td>Owner</td></tr>
+<tr><td>Tasks</td><td>Members</td><td>Members (delete: owner)</td></tr>
+<tr><td>Comments</td><td>Members</td><td>Author</td></tr>
+<tr><td>User profile</td><td>Self</td><td>Self</td></tr>
+</table>
+
+<h2>7. Validation &amp; Business Rules</h2>
+<ul>
+<li>Email must be unique and valid format.</li>
+<li>Password minimum 8 characters.</li>
+<li>Task status only: todo, in_progress, done.</li>
+<li>Assignee must be a member of the project.</li>
+<li>Deleting a project deletes its tasks and comments (cascade).</li>
+</ul>
+
+<h2>8. Seed / Test Data</h2>
+<ul><li>2 users (Ossian, Gayatri), 1 project "LIA Website", 6 tasks spread across all 3 statuses.</li></ul>
+
+<h2>9. Open Questions</h2>
+<ul><li>&#9744; Do we need file attachments on tasks?</li><li>&#9744; Soft delete or hard delete?</li></ul>
+
+<h2>Change Log</h2>
+<table>
+<tr><th>Version</th><th>Date</th><th>Author</th><th>Change</th></tr>
+<tr><td>0.1</td><td>2026-10-13</td><td>Gayatri</td><td>Template created</td></tr>
+<tr><td>1.0</td><td>2026-10-13</td><td>Gayatri</td><td>Example filled in for demo</td></tr>
+</table>
+<footer>LIA Project – TaskFlow – Backend Schema</footer>
+</body></html>

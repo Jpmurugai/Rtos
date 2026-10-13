@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>4. Design Brief – TaskFlow</title>
+<link rel="stylesheet" href="doc-style.css"></head><body>
+<nav><a href="index.html">Home</a><a href="04_Design_Brief_Example.html">4. Design Brief</a><a href="05_Backend_Schema_Example.html">5. Backend Schema</a><a href="06_Implementation_Plan_Example.html">6. Implementation Plan</a></nav>
+
+<h1>4. Design Brief Document – TaskFlow</h1>
+<h2>Document Info</h2>
+<table class="info">
+<tr><th>Project name</th><td>TaskFlow</td></tr>
+<tr><th>Document owner</th><td>Gayatri</td></tr>
+<tr><th>Version</th><td>1.0</td></tr>
+<tr><th>Date</th><td>2026-10-13</td></tr>
+<tr><th>Status</th><td>In review</td></tr>
+<tr><th>Related App Flow version</th><td>1.0</td></tr>
+</table>
+
+<h2>1. Design Goals</h2>
+<ul>
+<li><strong>Mood:</strong> Clean, calm, professional – focus on the tasks, not decoration.</li>
+<li><strong>Principles:</strong> Simple (max 3 clicks to any action), Consistent (same components everywhere), Clear status (colour + text for each task state).</li>
+</ul>
+
+<h2>2. Target Audience</h2>
+<p>Students and small teams (2–10 people) who need a lightweight alternative to big project tools. Mixed technical skill, use both laptop and phone.</p>
+
+<h2>3. Brand &amp; Visual Identity</h2>
+<h3>Colors</h3>
+<table>
+<tr><th>Role</th><th>Name</th><th>HEX</th></tr>
+<tr><td>Primary</td><td><span class="swatch" style="background:#1E40AF"></span>Deep Blue</td><td>#1E40AF</td></tr>
+<tr><td>Secondary</td><td><span class="swatch" style="background:#3B82F6"></span>Sky Blue</td><td>#3B82F6</td></tr>
+<tr><td>Background</td><td><span class="swatch" style="background:#F9FAFB"></span>Off White</td><td>#F9FAFB</td></tr>
+<tr><td>Text</td><td><span class="swatch" style="background:#1F2937"></span>Charcoal</td><td>#1F2937</td></tr>
+<tr><td>Success (Done)</td><td><span class="swatch" style="background:#16A34A"></span>Green</td><td>#16A34A</td></tr>
+<tr><td>Warning (In progress)</td><td><span class="swatch" style="background:#D97706"></span>Amber</td><td>#D97706</td></tr>
+<tr><td>Error</td><td><span class="swatch" style="background:#DC2626"></span>Red</td><td>#DC2626</td></tr>
+</table>
+
+<h3>Typography</h3>
+<table>
+<tr><th>Use</th><th>Font</th><th>Size</th><th>Weight</th></tr>
+<tr><td>H1 Heading</td><td>Inter</td><td>28px</td><td>700</td></tr>
+<tr><td>H2 Heading</td><td>Inter</td><td>20px</td><td>600</td></tr>
+<tr><td>Body</td><td>Inter</td><td>16px</td><td>400</td></tr>
+<tr><td>Small / labels</td><td>Inter</td><td>13px</td><td>500</td></tr>
+</table>
+<ul>
+<li><strong>Logo:</strong> Text logo "TaskFlow" in Deep Blue with a check-mark icon.</li>
+<li><strong>Icons:</strong> Lucide icon set (outline style).</li>
+<li><strong>Spacing:</strong> 8px grid, border radius 6px, cards with light shadow.</li>
+</ul>
+
+<h2>4. UI Components</h2>
+<table>
+<tr><th>Component</th><th>Style notes</th><th>Example</th></tr>
+<tr><td>Primary button</td><td>Deep Blue, white text, 6px radius</td><td><span class="btn" style="background:#1E40AF">Save</span></td></tr>
+<tr><td>Secondary button</td><td>White, blue border</td><td><span class="btn" style="background:#fff;color:#1E40AF;border:1px solid #1E40AF">Cancel</span></td></tr>
+<tr><td>Danger button</td><td>Red, only for delete</td><td><span class="btn" style="background:#DC2626">Delete</span></td></tr>
+<tr><td>Status badge</td><td>Rounded pill with colour + text</td><td><span class="badge todo">To do</span> <span class="badge prog">In progress</span> <span class="badge done">Done</span></td></tr>
+<tr><td>Inputs</td><td>Full width, 1px grey border, blue focus outline, label above</td><td>–</td></tr>
+<tr><td>Navigation</td><td>Top bar on desktop, bottom tab bar on mobile</td><td>–</td></tr>
+</table>
+
+<h2>5. Screen Designs</h2>
+<table>
+<tr><th>Screen ID</th><th>Screen</th><th>Layout description</th></tr>
+<tr><td>SCR-01</td><td>Login</td><td>Centered card, logo on top, email + password, primary "Log in" button, link to register.</td></tr>
+<tr><td>SCR-02</td><td>Register</td><td>Same card layout as login: name, email, password, confirm password.</td></tr>
+<tr><td>SCR-03</td><td>Dashboard (Projects)</td><td>Top bar, grid of project cards (name, # tasks, progress bar), "+ New project" button.</td></tr>
+<tr><td>SCR-04</td><td>Project Board</td><td>3 columns: To do / In progress / Done. Task cards can be dragged between columns.</td></tr>
+<tr><td>SCR-05</td><td>Task Details</td><td>Side panel: title, description, assignee, due date, status, comments.</td></tr>
+<tr><td>SCR-06</td><td>Profile</td><td>Avatar, name, email, change password, log out.</td></tr>
+</table>
+<h3>Wireframe – SCR-04 Project Board</h3>
+<div class="mock"><pre>
++--------------------------------------------------------------+
+| TaskFlow   Projects   Profile                     [Avatar]   |
++--------------------------------------------------------------+
+| Project: LIA Website                         [+ New task]    |
+|                                                              |
+|  TO DO            IN PROGRESS          DONE                  |
+| +------------+   +------------+      +------------+          |
+| | Login page |   | DB schema  |      | Jira setup |          |
+| | @Ossian    |   | @Gayatri   |      | @Ossian    |          |
+| | 20 Oct     |   | 18 Oct     |      | 13 Oct     |          |
+| +------------+   +------------+      +------------+          |
++--------------------------------------------------------------+
+</pre></div>
+
+<h2>6. Responsiveness &amp; Platforms</h2>
+<table>
+<tr><th>Device</th><th>Breakpoint</th><th>Behaviour</th></tr>
+<tr><td>Mobile</td><td>&lt; 640px</td><td>Board columns stack vertically, bottom tab navigation</td></tr>
+<tr><td>Tablet</td><td>640–1024px</td><td>2 columns visible, swipe for third</td></tr>
+<tr><td>Desktop</td><td>&gt; 1024px</td><td>All 3 columns side by side</td></tr>
+</table>
+
+<h2>7. Accessibility</h2>
+<ul>
+<li>&#9745; Contrast meets WCAG AA (4.5:1 for text)</li>
+<li>&#9745; Full keyboard navigation (Tab / Enter / Esc)</li>
+<li>&#9745; Alt text for all images and icons</li>
+<li>&#9745; Status shown with text, not only colour</li>
+</ul>
+
+<h2>8. Inspiration / References</h2>
+<ul><li>Trello (board layout)</li><li>Jira (status workflow)</li><li>Notion (clean typography)</li></ul>
+
+<h2>9. Open Questions</h2>
+<ul><li>&#9744; Dark mode in version 1 or later?</li><li>&#9744; Final logo – text only or icon?</li></ul>
+
+<h2>Change Log</h2>
+<table>
+<tr><th>Version</th><th>Date</th><th>Author</th><th>Change</th></tr>
+<tr><td>0.1</td><td>2026-10-13</td><td>Gayatri</td><td>Template created</td></tr>
+<tr><td>1.0</td><td>2026-10-13</td><td>Gayatri</td><td>Example filled in for demo</td></tr>
+</table>
+<footer>LIA Project – TaskFlow – Design Brief</footer>
+</body></html>

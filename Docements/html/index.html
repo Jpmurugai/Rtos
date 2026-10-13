@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>LIA Documentation – TaskFlow Example</title>
+<link rel="stylesheet" href="doc-style.css"></head><body>
+<h1>LIA Documentation Pack – Example Project: <em>TaskFlow</em></h1>
+<p><strong>TaskFlow</strong> is a simple web app where a small team can create projects, add tasks, assign them and track status (To do / In progress / Done). It is used here as a <strong>demo example</strong> of how the documents are filled in before (vibe) coding.</p>
+
+<table class="info">
+<tr><th>Prepared by</th><td>Gayatri (documents 4–6)</td></tr>
+<tr><th>Team</th><td>Ossian, Gayatri</td></tr>
+<tr><th>Date</th><td>2026-10-13</td></tr>
+<tr><th>Tool for tasks</th><td>Jira (key: TF)</td></tr>
+</table>
+
+<h2>Documents</h2>
+<table>
+<tr><th>#</th><th>Document</th><th>Owner</th><th>Question it answers</th></tr>
+<tr><td>1</td><td>Product Requirements</td><td>Ossian</td><td>What &amp; why? For whom?</td></tr>
+<tr><td>2</td><td>Technical Requirements</td><td>Ossian</td><td>With what technology?</td></tr>
+<tr><td>3</td><td>App Flow</td><td>Ossian</td><td>How does the user move through the app?</td></tr>
+<tr><td>4</td><td><a href="04_Design_Brief_Example.html">Design Brief</a></td><td>Gayatri</td><td>How does it look &amp; feel?</td></tr>
+<tr><td>5</td><td><a href="05_Backend_Schema_Example.html">Backend Schema</a></td><td>Gayatri</td><td>How is data stored, which APIs?</td></tr>
+<tr><td>6</td><td><a href="06_Implementation_Plan_Example.html">Implementation Plan</a></td><td>Gayatri</td><td>In what order do we build it?</td></tr>
+</table>
+
+<h2>How the documents connect</h2>
+<pre>
+PRD (features FR-xx) ──► App Flow (screens SCR-xx) ──► Design Brief (look of SCR-xx)
+        │                                                      │
+        ▼                                                      ▼
+TRD (tech stack) ──────► Backend Schema (tables TBL-xx, API) ──► Implementation Plan (tasks T-xx) ──► Jira
+</pre>
+<footer>LIA Project – Documentation before Vibe Coding</footer>
+</body></html>

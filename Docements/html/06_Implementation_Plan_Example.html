@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>6. Implementation Plan – TaskFlow</title>
+<link rel="stylesheet" href="doc-style.css"></head><body>
+<nav><a href="index.html">Home</a><a href="04_Design_Brief_Example.html">4. Design Brief</a><a href="05_Backend_Schema_Example.html">5. Backend Schema</a><a href="06_Implementation_Plan_Example.html">6. Implementation Plan</a></nav>
+
+<h1>6. Implementation Plan – TaskFlow</h1>
+<h2>Document Info</h2>
+<table class="info">
+<tr><th>Project name</th><td>TaskFlow</td></tr>
+<tr><th>Document owner</th><td>Gayatri</td></tr>
+<tr><th>Version</th><td>1.0</td></tr>
+<tr><th>Date</th><td>2026-10-13</td></tr>
+<tr><th>Status</th><td>In review</td></tr>
+<tr><th>Jira board</th><td>Project key <strong>TF</strong> (Scrum board)</td></tr>
+</table>
+
+<h2>1. Summary</h2>
+<ul>
+<li><strong>Start:</strong> 2026-10-13 &nbsp; <strong>Deadline:</strong> 2026-11-21 (6 weeks)</li>
+<li><strong>Team:</strong> Ossian (frontend + flow), Gayatri (design + backend)</li>
+<li><strong>Method:</strong> Scrum, 2-week sprints, daily 10-min stand-up</li>
+</ul>
+
+<h2>2. Phases / Milestones (= Jira Epics)</h2>
+<div class="timeline">
+<div style="background:#6b7280">W1<br>Setup</div>
+<div style="background:#1e40af">W2–3<br>Backend + Auth</div>
+<div style="background:#3b82f6">W4–5<br>Frontend + Board</div>
+<div style="background:#16a34a">W6<br>Test &amp; Release</div>
+</div>
+<table>
+<tr><th>Epic</th><th>Phase</th><th>Goal</th><th>Start</th><th>End</th><th>Deliverable</th></tr>
+<tr><td>TF-E0</td><td>0. Setup</td><td>Docs, repo, Jira, environments</td><td>13 Oct</td><td>17 Oct</td><td>All 6 docs approved, repo ready</td></tr>
+<tr><td>TF-E1</td><td>1. Backend &amp; Auth</td><td>Database + REST API</td><td>20 Oct</td><td>31 Oct</td><td>Working API with login</td></tr>
+<tr><td>TF-E2</td><td>2. Frontend</td><td>Screens SCR-01 – SCR-06</td><td>3 Nov</td><td>14 Nov</td><td>Usable web app</td></tr>
+<tr><td>TF-E3</td><td>3. Test &amp; Release</td><td>Testing, fixes, deploy</td><td>17 Nov</td><td>21 Nov</td><td>Live demo version</td></tr>
+</table>
+
+<h2>3. Task Breakdown (= Jira Stories / Tasks)</h2>
+<table>
+<tr><th>ID</th><th>Task</th><th>Epic</th><th>Related</th><th>Owner</th><th>Est.</th><th>Depends on</th><th>Status</th></tr>
+<tr><td>T-01</td><td>Write PRD, TRD, App Flow</td><td>E0</td><td>Docs 1–3</td><td>Ossian</td><td>2d</td><td>–</td><td><span class="badge done">Done</span></td></tr>
+<tr><td>T-02</td><td>Write Design Brief, Schema, Plan</td><td>E0</td><td>Docs 4–6</td><td>Gayatri</td><td>2d</td><td>T-01</td><td><span class="badge prog">In progress</span></td></tr>
+<tr><td>T-03</td><td>Set up Git repo + Jira board</td><td>E0</td><td>TRD</td><td>Ossian</td><td>0.5d</td><td>–</td><td><span class="badge done">Done</span></td></tr>
+<tr><td>T-04</td><td>Create database tables</td><td>E1</td><td>TBL-01–05</td><td>Gayatri</td><td>1d</td><td>T-02</td><td><span class="badge todo">To do</span></td></tr>
+<tr><td>T-05</td><td>Register / login API (JWT)</td><td>E1</td><td>FR-01</td><td>Gayatri</td><td>2d</td><td>T-04</td><td><span class="badge todo">To do</span></td></tr>
+<tr><td>T-06</td><td>Projects + members API</td><td>E1</td><td>FR-02</td><td>Gayatri</td><td>2d</td><td>T-05</td><td><span class="badge todo">To do</span></td></tr>
+<tr><td>T-07</td><td>Tasks + comments API</td><td>E1</td><td>FR-03, FR-04</td><td>Gayatri</td><td>2d</td><td>T-06</td><td><span class="badge todo">To do</span></td></tr>
+<tr><td>T-08</td><td>Login &amp; Register screens</td><td>E2</td><td>SCR-01, 02</td><td>Ossian</td><td>2d</td><td>T-05</td><td><span class="badge todo">To do</span></td></tr>
+<tr><td>T-09</td><td>Dashboard screen</td><td>E2</td><td>SCR-03</td><td>Ossian</td><td>2d</td><td>T-06</td><td><span class="badge todo">To do</span></td></tr>
+<tr><td>T-10</td><td>Project board with drag &amp; drop</td><td>E2</td><td>SCR-04</td><td>Ossian</td><td>3d</td><td>T-07</td><td><span class="badge todo">To do</span></td></tr>
+<tr><td>T-11</td><td>Task details + Profile</td><td>E2</td><td>SCR-05, 06</td><td>Gayatri</td><td>2d</td><td>T-07</td><td><span class="badge todo">To do</span></td></tr>
+<tr><td>T-12</td><td>Testing &amp; bug fixing</td><td>E3</td><td>All</td><td>Both</td><td>3d</td><td>T-08–11</td><td><span class="badge todo">To do</span></td></tr>
+<tr><td>T-13</td><td>Deploy + demo presentation</td><td>E3</td><td>TRD env</td><td>Both</td><td>1d</td><td>T-12</td><td><span class="badge todo">To do</span></td></tr>
+</table>
+
+<h2>4. AI / Vibe Coding Steps</h2>
+<table>
+<tr><th>Step</th><th>Prompt summary</th><th>Docs to give the AI</th></tr>
+<tr><td>1</td><td>"Create project structure for Node.js + PostgreSQL using this tech stack."</td><td>TRD</td></tr>
+<tr><td>2</td><td>"Create SQL migration for these tables."</td><td>Backend Schema</td></tr>
+<tr><td>3</td><td>"Build the REST API endpoints listed, with JWT auth and validation rules."</td><td>Backend Schema, PRD</td></tr>
+<tr><td>4</td><td>"Build screens SCR-01 – SCR-06 following this flow and design."</td><td>App Flow, Design Brief</td></tr>
+<tr><td>5</td><td>"Write tests for these requirements."</td><td>PRD, TRD</td></tr>
+</table>
+<div class="card"><strong>Tip:</strong> Always give the AI one task (T-xx) at a time with the related document section – smaller prompts give better code.</div>
+
+<h2>5. Definition of Done</h2>
+<ul>
+<li>&#9745; Code works and matches the requirement (FR-xx)</li>
+<li>&#9745; Follows Design Brief (colors, components)</li>
+<li>&#9745; Tested (unit / manual)</li>
+<li>&#9745; Reviewed by teammate (pull request)</li>
+<li>&#9745; Jira ticket moved to Done</li>
+</ul>
+
+<h2>6. Risks &amp; Blockers</h2>
+<table>
+<tr><th>Risk</th><th>Impact</th><th>Action</th></tr>
+<tr><td>AI-generated code has bugs</td><td>High</td><td>Review every PR, write tests</td></tr>
+<tr><td>Requirements change mid-project</td><td>Medium</td><td>Update docs first, then Jira</td></tr>
+<tr><td>Team member unavailable</td><td>Medium</td><td>Both know all docs; daily stand-up</td></tr>
+<tr><td>Deployment problems</td><td>Low</td><td>Deploy test version already in week 3</td></tr>
+</table>
+
+<h2>7. Communication</h2>
+<ul>
+<li>Daily stand-up 09:00 (10 min): done yesterday / today / blockers</li>
+<li>Sprint review + planning every second Friday</li>
+<li>Tools: Jira (tasks), GitHub (code), Teams (chat)</li>
+</ul>
+
+<h2>Change Log</h2>
+<table>
+<tr><th>Version</th><th>Date</th><th>Author</th><th>Change</th></tr>
+<tr><td>0.1</td><td>2026-10-13</td><td>Gayatri</td><td>Template created</td></tr>
+<tr><td>1.0</td><td>2026-10-13</td><td>Gayatri</td><td>Example filled in for demo</td></tr>
+</table>
+<footer>LIA Project – TaskFlow – Implementation Plan</footer>
+</body></html>
